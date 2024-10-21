@@ -1,31 +1,45 @@
 package com.example.coffee_shop_chain_management.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "employee")
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeID;
+    Long employeeID;
 
-    private String name;
-    private Date dob;
-    private String phone;
-    private String email;
-    private String address;
-    private Integer telegramID;
+    @Column(name = "name", nullable = false)
+    String name;
+
+    @Column(name = "dob", nullable = false)
+    Date dob;
+
+    @Column(name = "phone", nullable = false)
+    String phone;
+
+    @Column(name = "email", nullable = false)
+    String email;
+
+    @Column(name = "address", nullable = false)
+    String address;
+
+    @Column(name = "telegram_id", nullable = false)
+    Integer telegramID;
 
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
-    private Branch branch;
+    Branch branch;
 
     // Getters and setters
 }

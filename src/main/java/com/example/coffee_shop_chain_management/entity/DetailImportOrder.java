@@ -1,25 +1,36 @@
 package com.example.coffee_shop_chain_management.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "detail_import_order")
 public class DetailImportOrder {
 
     @EmbeddedId
-    private DetailImportOrderId id;
+    DetailImportOrderId id;
 
     @ManyToOne
     @MapsId("importOrderId")
     @JoinColumn(name = "import_order_id")
-    private ImportOrder importOrder;
+    ImportOrder importOrder;
 
     @ManyToOne
     @MapsId("materialId")
     @JoinColumn(name = "material_id")
-    private Material material;
+    Material material;
 
-    private Integer quantity;
-    private Double price;
+    @Column(name = "quantity", nullable = false)
+    Integer quantity;
+
+    @Column(name = "description", nullable = false)
+    Double price;
 
     // Getters and setters
 }
