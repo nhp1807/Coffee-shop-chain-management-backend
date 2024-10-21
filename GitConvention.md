@@ -2,6 +2,19 @@
 
 ## Overview
 
+- This is a convention for using Github in a team project
+- This convention is based on the [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) model
+- This convention is for a team project, not for a personal project
+- This convention is for a project that uses the `master` branch as the production branch and the `develop` branch as the development branch
+- This convention is for a project that uses the `dev` branch for adding new features and the `fix` branch for fixing bugs
+
+## Branches
+
+- `master`: the production branch
+- `develop`: the development branch
+- `dev/feature-name`: the branch for adding new features
+- `fix/bug-name`: the branch for fixing bugs
+
 ## Convention
 
 ### Branch naming convention
@@ -50,8 +63,15 @@
 6. Review and merge
 7. Delete the branch
 
+Remove the branch on the local repository
+
 - `git branch -d dev/feature-name`
 - `git branch -d fix/bug-name`
+
+And then delete the branch on the remote repository
+
+- `git push origin --delete dev/feature-name`
+- `git push origin --delete fix/bug-name`
 
 8. Update the local repository
 
