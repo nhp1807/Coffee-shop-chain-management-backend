@@ -1,27 +1,38 @@
 package com.example.coffee_shop_chain_management.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "material")
 public class Material {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long materialID;
+    Long materialID;
 
-    private String name;
-    private String description;
+    @Column(name = "name", nullable = false)
+    String name;
 
-    @OneToMany(mappedBy = "material")
-    private List<DetailImportOrder> detailImportOrders;
-
-    @OneToMany(mappedBy = "material")
-    private List<ProductMaterial> productMaterials;
+    @Column(name = "description", nullable = false)
+    String description;
 
     @OneToMany(mappedBy = "material")
-    private List<Storage> storages;
+    List<DetailImportOrder> detailImportOrders;
+
+    @OneToMany(mappedBy = "material")
+    List<ProductMaterial> productMaterials;
+
+    @OneToMany(mappedBy = "material")
+    List<Storage> storages;
 
     // Getters and setters
 }

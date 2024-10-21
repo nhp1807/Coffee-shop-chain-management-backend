@@ -1,26 +1,39 @@
 package com.example.coffee_shop_chain_management.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "branch")
 public class Branch {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long branchID;
+    Long branchID;
 
-    private String address;
-    private String phone;
-    private String fax;
+    @Column(name = "address", nullable = false)
+    String address;
+
+    @Column(name = "phone", nullable = false)
+    String phone;
+
+    @Column(name = "fax", nullable = false)
+    String fax;
 
     @OneToMany(mappedBy = "branch")
-    private List<Employee> employees;
+    List<Employee> employees;
 
     @OneToOne
     @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    Account account;
 
     // Getters and setters
 }
