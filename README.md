@@ -11,9 +11,9 @@ The coffee shop chain management system helps to conveniently manage coffee shop
 ## Members
 Here is the list of members working on this project
 
-| No. | Name                   | ID       | Email                           | Phone number |
-|-----|------------------------|----------|---------------------------------|--------------|
-| 1   | Nguyễn Hải Phong       | 20207624 | phong.nh207624@sis.hust.edu.vn  | 0982944425   |
-| 2   | Nguyễn Thị Vân Anh     | 20200035 | anh.ntv200035@sis.hust.edu.vn   | 0382202471   |
-| 3   | Nguyễn Quang Huy Hoàng | 20207605 | hoang.nqh207605@sis.hust.edu.vn | 0973188986   |
-| 4   | Nguyễn Đức Tú          | 20207638 | tu.nd207638@sis.hust.edu.vn     | 0962408606   |
+| No. | Name                   | ID       | Email                           |
+|-----|------------------------|----------|---------------------------------|
+| 1   | Nguyễn Hải Phong       | 20207624 | phong.nh207624@sis.hust.edu.vn  |
+| 2   | Nguyễn Thị Vân Anh     | 20200035 | anh.ntv200035@sis.hust.edu.vn   |
+| 3   | Nguyễn Quang Huy Hoàng | 20207605 | hoang.nqh207605@sis.hust.edu.vn |
+| 4   | Nguyễn Đức Tú          | 20207638 | tu.nd207638@sis.hust.edu.vn     |
