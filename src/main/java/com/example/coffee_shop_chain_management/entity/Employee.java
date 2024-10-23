@@ -31,10 +31,10 @@ public class Employee {
     @Column(name = "email", nullable = false)
     String email;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     String address;
 
-    @Column(name = "telegram_id", nullable = false)
+    @Column(name = "telegram_id")
     Integer telegramID;
 
     @ManyToOne
