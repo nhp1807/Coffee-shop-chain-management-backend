@@ -27,7 +27,7 @@ public class Application implements CommandLineRunner {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 
 		try {
-			telegramBotsApi.registerBot(bot); // Đăng ký bot một lần duy nhất
+			telegramBotsApi.registerBot(bot);
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
 			System.err.println("Error when registering bot: " + e.getMessage());

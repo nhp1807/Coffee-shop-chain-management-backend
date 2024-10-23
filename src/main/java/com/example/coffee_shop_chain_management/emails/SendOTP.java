@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.emails;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
@@ -17,13 +18,20 @@ import java.util.Properties;
 
 @Component
 public class SendOTP {
-    private static String SMTP_HOST;
-    private static String SMTP_PORT;
-    private static String SMTP_USERNAME;
-    private static String SMTP_PASSWORD;
-    private static String EMAIL_FROM;
-    private static String EMAIL_VERIFICATION_URL;
-    private static String EMAIL_VERIFICATION_API_KEY;
+    @Value("${smtp.host}")
+    private String SMTP_HOST;
+    @Value("${smtp.port}")
+    private String SMTP_PORT;
+    @Value("${smtp.username}")
+    private String SMTP_USERNAME;
+    @Value("${smtp.password}")
+    private String SMTP_PASSWORD;
+    @Value("${email.from}")
+    private String EMAIL_FROM;
+    @Value("${email.verification.url}")
+    private String EMAIL_VERIFICATION_URL;
+    @Value("${email.verification.api_key}")
+    private String EMAIL_VERIFICATION_API_KEY;
 
 
     public static void main(String[] args) {
@@ -36,7 +44,6 @@ public class SendOTP {
     }
 
     public boolean isValidEmail(String email) {
-        readPropertiesFile();
         try {
             // Tạo URL đối tượng
             URL url = new URL(EMAIL_VERIFICATION_URL);
@@ -101,8 +108,6 @@ public class SendOTP {
     }
 
     public void sendMail(String text, String sendTo) {
-        readPropertiesFile();
-
         if (!isValidEmail(sendTo)) {
             System.out.println("Email không hợp lệ: " + sendTo);
             return;
@@ -144,29 +149,6 @@ public class SendOTP {
         } catch (MessagingException e) {
             e.printStackTrace();
 
-        }
-    }
-
-    public void readPropertiesFile() {
-        Properties prop = new Properties();
-        InputStream input;
-
-        try {
-            input = new FileInputStream("config/application.properties");
-
-            // load a properties file
-            prop.load(input);
-
-            SMTP_HOST = prop.getProperty("smtp.host");
-            SMTP_PORT = prop.getProperty("smtp.port");
-            SMTP_USERNAME = prop.getProperty("smtp.username");
-            SMTP_PASSWORD = prop.getProperty("smtp.password");
-            EMAIL_FROM = prop.getProperty("email.from");
-            EMAIL_VERIFICATION_URL = prop.getProperty("email.verification.url");
-            EMAIL_VERIFICATION_API_KEY = prop.getProperty("email.verification.api_key");
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

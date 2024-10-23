@@ -5,21 +5,21 @@ import com.example.coffee_shop_chain_management.entity.OTP;
 import com.example.coffee_shop_chain_management.enums.OTPType;
 import com.example.coffee_shop_chain_management.repository.OTPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 @Component
 public class NotificationBot extends TelegramLongPollingBot {
+    @Value("${telegram.bot.username}")
     private String TELEGRAM_BOT_USERNAME;
+    @Value("${telegram.bot.token}")
     private String TELEGRAM_BOT_TOKEN;
     private Map<String, String> userCommands = new HashMap<>();
     private Map<String, String> pendingUserVerification = new HashMap<>();
@@ -28,10 +28,6 @@ public class NotificationBot extends TelegramLongPollingBot {
 
     @Autowired
     private SendOTP sendOTP;
-
-    public NotificationBot() {
-        readPropertiesFile();
-    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -125,25 +121,4 @@ public class NotificationBot extends TelegramLongPollingBot {
             }
         }
     }
-
-    public static void main(String[] args) {
-        NotificationBot bot = new NotificationBot();
-        bot.readPropertiesFile();
-    }
-
-    public void readPropertiesFile() {
-        Properties prop = new Properties();
-        InputStream input;
-
-        try {
-            input = new FileInputStream("config/application.properties");
-            prop.load(input);
-
-            TELEGRAM_BOT_USERNAME = prop.getProperty("telegram.bot.username");
-            TELEGRAM_BOT_TOKEN = prop.getProperty("telegram.bot.token");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
