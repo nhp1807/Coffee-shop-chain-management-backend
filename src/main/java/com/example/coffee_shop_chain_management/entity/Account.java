@@ -26,6 +26,12 @@ public class Account {
     @Column(name = "role", nullable = false)
     String role;
 
+    @Column(name = "chatID")
+    Integer chatID;
+
+    @Column(name = "email")
+    String email;
+
     @OneToOne(mappedBy = "account")
     @JoinColumn(name = "branch_id", nullable = false)
     Branch branch;
