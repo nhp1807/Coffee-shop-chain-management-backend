@@ -27,7 +27,7 @@ public class Account {
     String role;
 
     @Column(name = "chatID")
-    Integer chatID;
+    String chatID;
 
     @Column(name = "email")
     String email;
