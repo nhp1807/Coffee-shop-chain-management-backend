@@ -33,8 +33,4 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_BOT_USERNAME: ${{ secrets.TELEGRAM_BOT_USERNAME }}
-      - name: Check environment variables
-        run: |
-          echo $DATABASE_PASSWORD
-          echo $DATABASE_USERNAME
           
