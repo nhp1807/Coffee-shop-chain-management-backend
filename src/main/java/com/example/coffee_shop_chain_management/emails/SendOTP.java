@@ -18,13 +18,13 @@ import java.util.Properties;
 
 @Component
 public class SendOTP {
-    @Value("${smtp.host}")
+    @Value("${gmail.smtp.host}")
     private String SMTP_HOST;
-    @Value("${smtp.port}")
+    @Value("${gmail.smtp.port}")
     private String SMTP_PORT;
-    @Value("${smtp.username}")
+    @Value("${gmail.smtp.username}")
     private String SMTP_USERNAME;
-    @Value("${smtp.password}")
+    @Value("${gmail.smtp.password}")
     private String SMTP_PASSWORD;
     @Value("${email.from}")
     private String EMAIL_FROM;
