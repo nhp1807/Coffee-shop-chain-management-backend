@@ -34,7 +34,7 @@
 - `Fix: bug-name`: for fixing bugs
 - `Update: feature-name`: for updating features
 
-### Step-by-step guide
+## Step-by-step guide
 
 1. Create a new branch
 
@@ -48,20 +48,36 @@
 3. Commit changes
 
 - `git commit -m "Add: feature-name"`
+- `git commit -m "Fix: bug-name"`
+- `git commit -m "Update: feature-name"`
 
 4. Push to the remote repository
+
+Push the new branch to the remote repository
+You are not allowed to push to the master branch or the develop branch directly
 
 - `git push origin dev/feature-name`
 - `git push origin fix/bug-name`
 
-5. Create a pull request
+5. Pull the latest changes from the remote repository
+
+- `git pull origin develop`
+- `git pull origin master`
+- `git pull origin dev/feature-name`
+- `git pull origin fix/bug-name`
+
+6. Merge latest changes from develop branch to current branch
+
+- `git merge origin/develop`
+
+7. Create a pull request
 
 - Make a pull request from the new branch to the develop branch
 - Mustn't make a pull request from the new branch to the master branch
 - Mustn't merge the pull request without approval
 
-6. Review and merge
-7. Delete the branch
+8. Review and merge
+9. Delete the branch
 
 Remove the branch on the local repository
 
@@ -73,9 +89,4 @@ And then delete the branch on the remote repository
 - `git push origin --delete dev/feature-name`
 - `git push origin --delete fix/bug-name`
 
-8. Update the local repository
-
-- `git pull`
-
-9. Repeat the process
-10. Finish the project
+10. Repeat the process
