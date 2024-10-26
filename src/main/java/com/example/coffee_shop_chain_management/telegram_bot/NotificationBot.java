@@ -46,6 +46,18 @@ public class NotificationBot extends TelegramLongPollingBot {
             if (userCommands.containsKey(chatId) && userCommands.get(chatId).equals("VERIFY")) {
                 verifyOtp(Integer.parseInt(messageText), chatId);  // Kiểm tra OTP
             } else if (userCommands.containsKey(chatId) && userCommands.get(chatId).equals("IDENTIFIER")) {
+                Account account = accountService.getAccountByEmail(messageText);
+
+                if (account != null && account.getChatID() != null) {
+                    sendMessage("This email/phone number is already verified.", chatId);
+                    userCommands.remove(chatId);
+                    return;
+                } else if (account == null) {
+                    sendMessage("No account found for the provided identifier. Please try again.", chatId);
+                    userCommands.remove(chatId);
+                    return;
+                }
+
                 int otpCode = sendOTP.generateOTP();
                 OTP otp = new OTP(otpCode, messageText, OTPType.REGISTER);
                 otpService.createOTP(otp);

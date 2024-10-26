@@ -1,5 +1,6 @@
 package com.example.coffee_shop_chain_management.controller;
 
+import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.OTP;
@@ -23,8 +24,7 @@ public class RegistrationController {
 
 
     @PostMapping("/register/account")
-    public Account createAccount(@RequestBody Account account){
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
+    public Account createAccount(@RequestBody CreateAccountDTO account) {
         return accountService.createAccount(account);
     }
 }

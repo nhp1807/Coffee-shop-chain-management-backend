@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface TimesheetRepository extends JpaRepository<Timesheet, Long> {
-    Optional<Timesheet> findByEmployeeId(Long employeeId);
 }
 

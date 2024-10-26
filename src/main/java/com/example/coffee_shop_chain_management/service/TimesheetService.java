@@ -20,10 +20,6 @@ public class TimesheetService {
         return timesheetRepository.findById(id).orElse(null);
     }
 
-    public Timesheet getTimesheetByEmployeeId(Long employeeId) {
-        return timesheetRepository.findByEmployeeId(employeeId).orElse(null);
-    }
-
     public Timesheet updateTimesheet(Timesheet timesheet) {
         return timesheetRepository.save(timesheet);
     }
