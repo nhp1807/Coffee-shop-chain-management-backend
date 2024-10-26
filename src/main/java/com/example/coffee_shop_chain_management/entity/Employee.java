@@ -35,7 +35,7 @@ public class Employee {
     String address;
 
     @Column(name = "telegram_id")
-    Integer telegramID;
+    String chatID;
 
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)

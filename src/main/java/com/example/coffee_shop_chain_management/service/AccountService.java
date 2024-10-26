@@ -14,6 +14,10 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
+    public Account getAccountById(Long id){
+        return accountRepository.findById(id).orElse(null);
+    }
+
     public Account getAccountByUsername(String username){
         return accountRepository.findByUsername(username).get();
     }
@@ -28,5 +32,9 @@ public class AccountService {
 
     public void deleteAccount(Account account){
         accountRepository.delete(account);
+    }
+
+    public void deleteAccountById(Long id){
+        accountRepository.deleteById(id);
     }
 }
