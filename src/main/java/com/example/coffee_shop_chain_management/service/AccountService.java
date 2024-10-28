@@ -46,7 +46,7 @@ public class AccountService {
                 orElseThrow(() -> new RuntimeException("Account not found!"));
 
         if (accountDTO.getPassword() != null) {
-            account.setUsername(passwordEncoder.encode(accountDTO.getPassword()));
+            account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         }
 
         if (accountDTO.getEmail() != null) {
