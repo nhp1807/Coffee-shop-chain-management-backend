@@ -1,21 +1,18 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
-import com.example.coffee_shop_chain_management.mapper.AccountMapper;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Service
 public class AccountService {
+    @Autowired
     private AccountRepository accountRepository;
-    private AccountMapper accountMapper;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public Account createAccount(CreateAccountDTO accountDTO){
@@ -23,8 +20,11 @@ public class AccountService {
             throw new RuntimeException("Username is already taken!");
         }
 
-        Account account = accountMapper.toAccount(accountDTO);
+        Account account = new Account();
+        account.setUsername(accountDTO.getUsername());
         account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        account.setEmail(accountDTO.getEmail());
+        account.setRole(accountDTO.getRole());
 
         return accountRepository.save(account);
     }
@@ -41,7 +41,22 @@ public class AccountService {
         return accountRepository.findByEmail(email).orElse(null);
     }
 
-    public void updateAccount(Account account){
+    public void updateAccount(Long accountID, UpdateAccountDTO accountDTO){
+        Account account = accountRepository.findById(accountID).
+                orElseThrow(() -> new RuntimeException("Account not found!"));
+
+        if (accountDTO.getPassword() != null) {
+            account.setUsername(passwordEncoder.encode(accountDTO.getPassword()));
+        }
+
+        if (accountDTO.getEmail() != null) {
+            account.setEmail(accountDTO.getEmail());
+        }
+
+        if (accountDTO.getChatID() != null) {
+            account.setChatID(accountDTO.getChatID());
+        }
+
         accountRepository.save(account);
     }
 

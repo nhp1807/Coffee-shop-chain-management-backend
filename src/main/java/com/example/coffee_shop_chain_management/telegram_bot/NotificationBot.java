@@ -1,5 +1,6 @@
 package com.example.coffee_shop_chain_management.telegram_bot;
 
+import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.OTP;
@@ -157,8 +158,11 @@ public class NotificationBot extends TelegramLongPollingBot {
 
                 otpService.updateOTP(otp);
 
+                UpdateAccountDTO updateAccountDTO = new UpdateAccountDTO();
+                updateAccountDTO.setChatID(chatId);
+
                 account.setChatID(chatId);
-                accountService.updateAccount(account);
+                accountService.updateAccount(account.getAccountID(), updateAccountDTO);
             } else {
                 sendMessage("Invalid OTP. Please try again.", chatId);
             }
