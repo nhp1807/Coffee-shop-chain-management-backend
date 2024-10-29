@@ -6,10 +6,16 @@ import com.example.coffee_shop_chain_management.repository.ProductMaterialReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductMaterialService {
     @Autowired
     private ProductMaterialRepository productMaterialRepository;
+
+    public List<ProductMaterial> getAllProductMaterials() {
+        return productMaterialRepository.findAll();
+    }
 
     public ProductMaterial createProductMaterial(ProductMaterial productMaterial) {
         return productMaterialRepository.save(productMaterial);

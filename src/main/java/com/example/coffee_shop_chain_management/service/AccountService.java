@@ -8,12 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public List<Account> getAllAccounts(){
+        return accountRepository.findAll();
+    }
 
     public Account createAccount(CreateAccountDTO accountDTO){
         if(accountRepository.existsByUsername(accountDTO.getUsername())){
@@ -41,7 +47,7 @@ public class AccountService {
         return accountRepository.findByEmail(email).orElse(null);
     }
 
-    public void updateAccount(Long accountID, UpdateAccountDTO accountDTO){
+    public Account updateAccount(Long accountID, UpdateAccountDTO accountDTO){
         Account account = accountRepository.findById(accountID).
                 orElseThrow(() -> new RuntimeException("Account not found!"));
 
@@ -58,19 +64,27 @@ public class AccountService {
         }
 
         accountRepository.save(account);
+
+        return account;
     }
 
-    public void deleteAccount(Account account){
+    public boolean deleteAccount(Account account){
+        if (account == null) {
+            return false;
+        }
+
         accountRepository.delete(account);
+        return true;
     }
 
-    public void deleteAccountById(Long id){
+    public boolean deleteAccountById(Long id){
         Account account = accountRepository.findById(id).orElse(null);
 
         if(account == null){
-            throw new RuntimeException("Account not found!");
+            return false;
         }
 
         accountRepository.deleteById(id);
+        return true;
     }
 }

@@ -5,10 +5,16 @@ import com.example.coffee_shop_chain_management.repository.ExportOrderRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ExportOrderService {
     @Autowired
     private ExportOrderRepository exportOrderRepository;
+
+    public List<ExportOrder> getAllExportOrders() {
+        return exportOrderRepository.findAll();
+    }
 
     public ExportOrder createExportOrder(ExportOrder exportOrder) {
         return exportOrderRepository.save(exportOrder);

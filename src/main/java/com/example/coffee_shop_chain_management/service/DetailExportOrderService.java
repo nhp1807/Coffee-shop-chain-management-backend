@@ -6,10 +6,16 @@ import com.example.coffee_shop_chain_management.repository.DetailExportOrderRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DetailExportOrderService {
     @Autowired
     private DetailExportOrderRepository detailExportOrderRepository;
+
+    public List<DetailExportOrder> getAllDetailExportOrders(){
+        return detailExportOrderRepository.findAll();
+    }
 
     public DetailExportOrder createDetailExportOrder(DetailExportOrder detailExportOrder){
         return detailExportOrderRepository.save(detailExportOrder);

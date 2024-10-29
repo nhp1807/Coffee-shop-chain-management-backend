@@ -5,10 +5,16 @@ import com.example.coffee_shop_chain_management.repository.OTPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OTPService {
     @Autowired
     private OTPRepository otpRepository;
+
+    public List<OTP> getAllOTP(){
+        return otpRepository.findAll();
+    }
 
     public OTP createOTP(OTP otp){
         return otpRepository.save(otp);

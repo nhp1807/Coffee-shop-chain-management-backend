@@ -5,10 +5,16 @@ import com.example.coffee_shop_chain_management.repository.ImportOrderRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ImportOrderService {
     @Autowired
     private ImportOrderRepository importOrderRepository;
+
+    public List<ImportOrder> getAllImportOrders() {
+        return importOrderRepository.findAll();
+    }
 
     public ImportOrder createImportOrder(ImportOrder importOrder) {
         return importOrderRepository.save(importOrder);

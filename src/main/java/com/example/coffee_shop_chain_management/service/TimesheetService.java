@@ -6,11 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
+import java.util.List;
 
 @Service
 public class TimesheetService {
     @Autowired
     private TimesheetRepository timesheetRepository;
+
+    public List<Timesheet> getAllTimesheets() {
+        return timesheetRepository.findAll();
+    }
 
     public Timesheet createTimesheet(Timesheet timesheet) {
         return timesheetRepository.save(timesheet);
