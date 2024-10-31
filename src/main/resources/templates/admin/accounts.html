@@ -13,6 +13,59 @@
     <div class="mb-3">
         <button class="btn btn-primary" onclick="showCreateAccountForm()">Create New Account</button>
     </div>
+
+    <!-- Panel Tạo Tài Khoản -->
+    <div id="createAccountPanel" style="display: none;" class="border p-3 mb-3">
+        <h4>Create Account</h4>
+        <form id="createAccountForm">
+            <div class="form-group">
+                <label for="createUsername">Username:</label>
+                <input type="text" id="createUsername" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="createPassword">Password:</label>
+                <input type="password" id="createPassword" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="createRole">Role:</label>
+                <input type="text" id="createRole" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="createEmail">Email:</label>
+                <input type="email" id="createEmail" class="form-control" />
+            </div>
+            <button type="button" class="btn btn-success" onclick="createAccount()">Create</button>
+            <button type="button" class="btn btn-secondary" onclick="hideCreateAccountForm()">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Panel Cập Nhật Tài Khoản -->
+    <div id="updateAccountPanel" style="display: none;" class="border p-3 mb-3">
+        <h4>Update Account</h4>
+        <form id="updateAccountForm">
+            <input type="hidden" id="updateAccountID" />
+            <div class="form-group">
+                <label for="updateUsername">Username:</label>
+                <input type="text" id="updateUsername" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="updatePassword">Password:</label>
+                <input type="password" id="updatePassword" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="updateRole">Role:</label>
+                <input type="text" id="updateRole" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="updateEmail">Email:</label>
+                <input type="email" id="updateEmail" class="form-control" />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="updateAccount()">Update</button>
+            <button type="button" class="btn btn-secondary" onclick="hideUpdateAccountForm()">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Bảng Danh Sách Tài Khoản -->
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
         <tr>

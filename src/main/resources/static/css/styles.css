@@ -1,12 +1,10 @@
-.container {
-    max-width: 800px;
-    margin: auto;
+#createAccountPanel, #updateAccountPanel {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
-.btn {
+button {
     margin-right: 5px;
-}
-
-.form-label {
-    font-weight: bold;
 }
