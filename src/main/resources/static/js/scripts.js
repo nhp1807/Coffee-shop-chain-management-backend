@@ -29,11 +29,22 @@ function loadAccountDetails(accountId) {
 }
 
 function createAccount() {
+    const username = document.getElementById("createUsername").value.trim();
+    const password = document.getElementById("createPassword").value.trim();
+    const role = document.getElementById("createRole").value.trim();
+    const email = document.getElementById("createEmail").value.trim();
+
+    // Kiểm tra thông tin
+    if (!username || !password || !role || !email) {
+        alert("Please fill in all fields.");
+        return; // Ngăn không cho tiếp tục nếu không đầy đủ thông tin
+    }
+
     const account = {
-        username: document.getElementById("createUsername").value,
-        password: document.getElementById("createPassword").value,
-        role: document.getElementById("createRole").value,
-        email: document.getElementById("createEmail").value
+        username: username,
+        password: password,
+        role: role,
+        email: email
     };
 
     fetch("/api/account/create", {
@@ -48,11 +59,22 @@ function createAccount() {
 
 function updateAccount() {
     const accountId = document.getElementById("updateAccountID").value;
+    const username = document.getElementById("updateUsername").value.trim();
+    const password = document.getElementById("updatePassword").value.trim();
+    const role = document.getElementById("updateRole").value.trim();
+    const email = document.getElementById("updateEmail").value.trim();
+
+    // Kiểm tra thông tin
+    if (!username || !password || !role || !email) {
+        alert("Please fill in all fields.");
+        return; // Ngăn không cho tiếp tục nếu không đầy đủ thông tin
+    }
+
     const account = {
-        username: document.getElementById("updateUsername").value,
-        password: document.getElementById("updatePassword").value,
-        role: document.getElementById("updateRole").value,
-        email: document.getElementById("updateEmail").value
+        username: username,
+        password: password,
+        role: role,
+        email: email
     };
 
     if (confirm("Are you sure you want to update this account?")) {
