@@ -76,3 +76,22 @@ function deleteAccount(accountId) {
             });
     }
 }
+
+function logout() {
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'include' // Đảm bảo cookie phiên được gửi cùng yêu cầu
+    })
+        .then(response => {
+            if (response.ok) {
+                // Nếu logout thành công, chuyển hướng đến trang đăng nhập hoặc trang chủ
+                window.location.href = '/login'; // Thay thế với đường dẫn của bạn
+            } else {
+                alert('Logout failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('An error occurred during logout. Please try again.');
+        });
+}

@@ -8,61 +8,110 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Coffee Shop</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Reports</a>
+            </li>
+        </ul>
+        <button class="btn btn-danger ml-auto" onclick="logout()">Logout</button>
+    </div>
+</nav>
 <div class="container mt-5">
     <h2 class="text-center">Account List</h2>
     <div class="mb-3">
-        <button class="btn btn-primary" onclick="showCreateAccountForm()">Create New Account</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#createAccountModal">Create New Account</button>
     </div>
 
-    <!-- Panel Tạo Tài Khoản -->
-    <div id="createAccountPanel" style="display: none;" class="border p-3 mb-3">
-        <h4>Create Account</h4>
-        <form id="createAccountForm">
-            <div class="form-group">
-                <label for="createUsername">Username:</label>
-                <input type="text" id="createUsername" class="form-control" required />
+    <!-- Modal Tạo Tài Khoản -->
+    <div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createAccountModalLabel">Create Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createAccountForm">
+                        <div class="form-group">
+                            <label for="createUsername">Username:</label>
+                            <input type="text" id="createUsername" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createPassword">Password:</label>
+                            <input type="password" id="createPassword" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createRole">Role:</label>
+                            <input type="text" id="createRole" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createEmail">Email:</label>
+                            <input type="email" id="createEmail" class="form-control" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="createAccount()">Create</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="createPassword">Password:</label>
-                <input type="password" id="createPassword" class="form-control" required />
-            </div>
-            <div class="form-group">
-                <label for="createRole">Role:</label>
-                <input type="text" id="createRole" class="form-control" required />
-            </div>
-            <div class="form-group">
-                <label for="createEmail">Email:</label>
-                <input type="email" id="createEmail" class="form-control" />
-            </div>
-            <button type="button" class="btn btn-success" onclick="createAccount()">Create</button>
-            <button type="button" class="btn btn-secondary" onclick="hideCreateAccountForm()">Cancel</button>
-        </form>
+        </div>
     </div>
 
-    <!-- Panel Cập Nhật Tài Khoản -->
-    <div id="updateAccountPanel" style="display: none;" class="border p-3 mb-3">
-        <h4>Update Account</h4>
-        <form id="updateAccountForm">
-            <input type="hidden" id="updateAccountID" />
-            <div class="form-group">
-                <label for="updateUsername">Username:</label>
-                <input type="text" id="updateUsername" class="form-control" required />
+    <!-- Modal Cập Nhật Tài Khoản -->
+    <div class="modal fade" id="updateAccountModal" tabindex="-1" role="dialog" aria-labelledby="updateAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateAccountModalLabel">Update Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateAccountForm">
+                        <input type="hidden" id="updateAccountID" />
+                        <div class="form-group">
+                            <label for="updateUsername">Username:</label>
+                            <input type="text" id="updateUsername" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="updatePassword">Password:</label>
+                            <input type="password" id="updatePassword" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="updateRole">Role:</label>
+                            <input type="text" id="updateRole" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="updateEmail">Email:</label>
+                            <input type="email" id="updateEmail" class="form-control" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="updateAccount()">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="updatePassword">Password:</label>
-                <input type="password" id="updatePassword" class="form-control" required />
-            </div>
-            <div class="form-group">
-                <label for="updateRole">Role:</label>
-                <input type="text" id="updateRole" class="form-control" required />
-            </div>
-            <div class="form-group">
-                <label for="updateEmail">Email:</label>
-                <input type="email" id="updateEmail" class="form-control" />
-            </div>
-            <button type="button" class="btn btn-primary" onclick="updateAccount()">Update</button>
-            <button type="button" class="btn btn-secondary" onclick="hideUpdateAccountForm()">Cancel</button>
-        </form>
+        </div>
     </div>
 
     <!-- Bảng Danh Sách Tài Khoản -->
@@ -83,7 +132,7 @@
             <td th:text="${account.role}"></td>
             <td th:text="${account.email}"></td>
             <td>
-                <button class="btn btn-warning btn-sm" th:onclick="'loadAccountDetails(' + ${account.accountID} + ')'">Edit</button>
+                <button class="btn btn-warning btn-sm" th:onclick="'loadAccountDetails(' + ${account.accountID} + ')'" data-toggle="modal" data-target="#updateAccountModal">Edit</button>
                 <button class="btn btn-danger btn-sm" th:onclick="'deleteAccount(' + ${account.accountID} + ')'">Delete</button>
             </td>
         </tr>
