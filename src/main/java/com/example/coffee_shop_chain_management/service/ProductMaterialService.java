@@ -18,6 +18,10 @@ public class ProductMaterialService {
     }
 
     public ProductMaterial createProductMaterial(ProductMaterial productMaterial) {
+        if (productMaterialRepository.existsById(productMaterial.getId())) {
+            return null;
+        }
+
         return productMaterialRepository.save(productMaterial);
     }
 
@@ -29,11 +33,21 @@ public class ProductMaterialService {
         return productMaterialRepository.save(productMaterial);
     }
 
-    public void deleteProductMaterial(ProductMaterial productMaterial) {
+    public boolean deleteProductMaterial(ProductMaterial productMaterial) {
+        if (!productMaterialRepository.existsById(productMaterial.getId())) {
+            return false;
+        }
+
         productMaterialRepository.delete(productMaterial);
+        return true;
     }
 
-    public void deleteProductMaterialById(ProductMaterialId id) {
+    public boolean deleteProductMaterialById(ProductMaterialId id) {
+        if (!productMaterialRepository.existsById(id)) {
+            return false;
+        }
+
         productMaterialRepository.deleteById(id);
+        return true;
     }
 }

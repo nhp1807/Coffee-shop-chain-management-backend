@@ -27,7 +27,7 @@ public class DetailImportOrder {
     Material material;
 
     @Column(name = "quantity", nullable = false)
-    Integer quantity;
+    Double quantity;
 
     @Column(name = "description", nullable = false)
     Double price;

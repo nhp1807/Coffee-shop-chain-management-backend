@@ -69,7 +69,7 @@ public class AccountService {
     }
 
     public boolean deleteAccount(Account account){
-        if (account == null) {
+        if (!accountRepository.existsById(account.getAccountID())) {
             return false;
         }
 
@@ -78,9 +78,7 @@ public class AccountService {
     }
 
     public boolean deleteAccountById(Long id){
-        Account account = accountRepository.findById(id).orElse(null);
-
-        if(account == null){
+        if (!accountRepository.existsById(id)) {
             return false;
         }
 

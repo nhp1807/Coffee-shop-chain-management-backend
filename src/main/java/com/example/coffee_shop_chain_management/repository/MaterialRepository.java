@@ -10,5 +10,9 @@ import java.util.List;
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     // Truy vấn nguyên liệu theo tên
     List<Material> findByNameContaining(String name);
+
+    Material findByName(String name);
+
+    boolean existsByName(String name);
 }
 

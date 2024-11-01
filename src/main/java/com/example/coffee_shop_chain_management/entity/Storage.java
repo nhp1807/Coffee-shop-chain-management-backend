@@ -18,7 +18,7 @@ public class Storage {
     Long storageID;
 
     @Column(name = "quantity", nullable = false)
-    Integer quantity;
+    Double quantity;
 
     @ManyToOne
     @JoinColumn(name = "material_id", nullable = false)

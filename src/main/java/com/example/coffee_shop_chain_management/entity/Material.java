@@ -22,9 +22,6 @@ public class Material {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "description", nullable = false)
-    String description;
-
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailImportOrder> detailImportOrders;
 

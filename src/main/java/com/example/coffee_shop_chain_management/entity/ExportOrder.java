@@ -33,6 +33,10 @@ public class ExportOrder {
     @JoinColumn(name = "employee_id", nullable = false)
     Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    Branch branch;
+
     @OneToMany(mappedBy = "exportOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailExportOrder> detailExportOrders;
 

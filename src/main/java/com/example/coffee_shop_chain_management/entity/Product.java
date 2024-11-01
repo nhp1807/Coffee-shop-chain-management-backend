@@ -28,6 +28,9 @@ public class Product {
     @Column(name = "price", nullable = false)
     Double price;
 
+    @Column(name = "image", nullable = false)
+    String image;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailExportOrder> detailExportOrders;
 

@@ -33,6 +33,10 @@ public class ImportOrder {
     @JoinColumn(name = "supplier_id", nullable = false)
     Supplier supplier;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    Branch branch;
+
     @OneToMany(mappedBy = "importOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailImportOrder> detailImportOrders;
 
