@@ -25,13 +25,13 @@ public class Material {
     @Column(name = "description", nullable = false)
     String description;
 
-    @OneToMany(mappedBy = "material")
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailImportOrder> detailImportOrders;
 
-    @OneToMany(mappedBy = "material")
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProductMaterial> productMaterials;
 
-    @OneToMany(mappedBy = "material")
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Storage> storages;
 
     // Getters and setters

@@ -33,7 +33,7 @@ public class ImportOrder {
     @JoinColumn(name = "supplier_id", nullable = false)
     Supplier supplier;
 
-    @OneToMany(mappedBy = "importOrder")
+    @OneToMany(mappedBy = "importOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailImportOrder> detailImportOrders;
 
     // Getters and setters

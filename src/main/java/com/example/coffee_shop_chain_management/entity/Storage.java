@@ -24,5 +24,9 @@ public class Storage {
     @JoinColumn(name = "material_id", nullable = false)
     Material material;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id", nullable = false)
+    Branch branch;
+
     // Getters and setters
 }
