@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class ImportOrder {
     String paymentMethod;
 
     @Column(name = "date", nullable = false)
-    Date date;
+    LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id", nullable = false)

@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -149,10 +150,10 @@ public class NotificationBot extends TelegramLongPollingBot {
 
             OTP otp = otpService.getOTPByEmail(identifier);
 
-            if (otp != null && otp.getOtpCode() == otpInput) {
+            if (otp != null && otp.getOtpCode() == otpInput && LocalDateTime.now().isBefore(otp.getExpiredAt())) {
                 sendMessage("OTP verified successfully!", chatId);
                 otp.setIsUsed(true);
-                otp.setUsedAt(System.currentTimeMillis());
+                otp.setUsedAt(LocalDateTime.now());
                 userCommands.remove(chatId);
                 pendingUserVerification.remove(chatId);
 
