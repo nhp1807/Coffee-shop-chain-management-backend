@@ -63,12 +63,22 @@ public class ImportOrderService {
                 material.setName(detailDTO.getMaterialName());
                 materialRepository.save(material); // Lưu nguyên liệu mới
 
-                // Tạo Storage mới cho nguyên liệu vừa tạo
-                Storage newStorage = new Storage();
-                newStorage.setMaterial(material);
-                newStorage.setQuantity(detailDTO.getQuantity());
-                newStorage.setBranch(branch);
-                storageRepository.save(newStorage); // Lưu Storage mới
+                // Tạo Storage mới cho nguyên liệu vừa tạo đối với tất cả các chi nhánh, nhưng chỉ tăng quantity cho chi nhánh hiện tại
+                List<Branch> branches = branchRepository.findAll();
+                for (Branch b : branches) {
+                    Storage newStorage = new Storage();
+                    newStorage.setMaterial(material);
+                    newStorage.setBranch(b);
+
+                    if (b.getBranchID() == branch.getBranchID()) {
+                        newStorage.setQuantity(detailDTO.getQuantity());
+                        storageRepository.save(newStorage); // Lưu Storage mới
+                        continue;
+                    }
+
+                    newStorage.setQuantity(0d);
+                    storageRepository.save(newStorage); // Lưu Storage mới
+                }
             } else {
                 // Nếu nguyên liệu đã tồn tại, kiểm tra kho
                 Storage storage = storageRepository.findByMaterial_MaterialID(material.getMaterialID());
