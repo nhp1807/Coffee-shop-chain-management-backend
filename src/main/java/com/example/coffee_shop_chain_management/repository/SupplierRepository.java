@@ -10,5 +10,7 @@ import java.util.List;
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     // Truy vấn nhà cung cấp theo tên
     List<Supplier> findByNameContaining(String name);
+
+    boolean existsByName(String name);
 }
 

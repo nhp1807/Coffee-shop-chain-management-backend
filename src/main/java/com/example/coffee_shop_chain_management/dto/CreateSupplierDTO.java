@@ -8,10 +8,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DetailImportOrderDTO {
-    String materialName;
-    Double quantity;
-    Double price;
-    String description;
+public class CreateSupplierDTO {
+    String name;
+    String phone;
+    String address;
 }
-

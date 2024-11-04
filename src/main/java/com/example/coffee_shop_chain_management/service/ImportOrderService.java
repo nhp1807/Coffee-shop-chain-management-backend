@@ -4,11 +4,16 @@ import com.example.coffee_shop_chain_management.dto.CreateImportOrderDTO;
 import com.example.coffee_shop_chain_management.dto.DetailImportOrderDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
+import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.ImportOrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ImportOrderService {
@@ -31,14 +36,16 @@ public class ImportOrderService {
         return importOrderRepository.findAll();
     }
 
-    public ImportOrder createImportOrder(CreateImportOrderDTO importOrderDTO) {
+    @Transactional
+    public APIResponse<ImportOrderResponse> createImportOrder(CreateImportOrderDTO importOrderDTO) {
         // Tạo đối tượng ImportOrder mới
         ImportOrder importOrder = new ImportOrder();
 
         // Thiết lập các thuộc tính
-        importOrder.setTotal(importOrderDTO.getTotal());
         importOrder.setPaymentMethod(importOrderDTO.getPaymentMethod());
-        importOrder.setDate(importOrderDTO.getDate());
+        importOrder.setDate(LocalDateTime.now());
+
+        double total = 0d;
 
         // Tìm nhà cung cấp theo ID
         Supplier supplier = supplierRepository.findById(importOrderDTO.getSupplierId())
@@ -48,6 +55,7 @@ public class ImportOrderService {
         // Tìm chi nhánh theo ID
         Branch branch = branchRepository.findById(importOrderDTO.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Chi nhánh không tồn tại"));
+
         importOrder.setBranch(branch);
 
         // Khởi tạo danh sách DetailImportOrder
@@ -70,7 +78,7 @@ public class ImportOrderService {
                     newStorage.setMaterial(material);
                     newStorage.setBranch(b);
 
-                    if (b.getBranchID() == branch.getBranchID()) {
+                    if (Objects.equals(b.getBranchID(), branch.getBranchID())) {
                         newStorage.setQuantity(detailDTO.getQuantity());
                         storageRepository.save(newStorage); // Lưu Storage mới
                         continue;
@@ -99,19 +107,39 @@ public class ImportOrderService {
 
             // Tạo DetailImportOrder và thêm vào danh sách
             DetailImportOrder detailImportOrder = new DetailImportOrder();
+            DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
+            detailImportOrderId.setImportOrderId(importOrder.getImportID());
+            detailImportOrderId.setMaterialId(material.getMaterialID());
+            detailImportOrder.setId(detailImportOrderId);
+
             detailImportOrder.setMaterial(material); // Sử dụng nguyên liệu đã tìm thấy hoặc vừa tạo
             detailImportOrder.setQuantity(detailDTO.getQuantity());
             detailImportOrder.setImportOrder(importOrder);
+            detailImportOrder.setPrice(detailDTO.getPrice());
+            detailImportOrder.setDescription(detailDTO.getDescription());
+
+            total += detailDTO.getQuantity() * detailDTO.getPrice();
 
             detailImportOrders.add(detailImportOrder);
         }
 
         // Thiết lập danh sách chi tiết vào đơn nhập
         importOrder.setDetailImportOrders(detailImportOrders);
+        importOrder.setTotal(total);
 
-        return importOrderRepository.save(importOrder);
+        ImportOrder newImportOrder = importOrderRepository.save(importOrder);
+
+        // Tạo đối tượng ImportOrderResponse để trả về
+        ImportOrderResponse importOrderResponse = new ImportOrderResponse();
+        importOrderResponse.setImportID(newImportOrder.getImportID());
+        importOrderResponse.setTotal(newImportOrder.getTotal());
+        importOrderResponse.setPaymentMethod(newImportOrder.getPaymentMethod());
+        importOrderResponse.setDate(newImportOrder.getDate().toString());
+        importOrderResponse.setSupplierId(newImportOrder.getSupplier().getSupplierID());
+        importOrderResponse.setBranchId(newImportOrder.getBranch().getBranchID());
+
+        return new APIResponse<>(importOrderResponse, "Import order created successfully", true);
     }
-
 
     public ImportOrder getImportOrderById(Long id) {
         return importOrderRepository.findById(id).orElse(null);
@@ -125,7 +153,7 @@ public class ImportOrderService {
         importOrderRepository.delete(importOrder);
     }
 
-    public void deleteImportOrderByID(Long id) {
+    public void deleteImportOrderById(Long id) {
         importOrderRepository.deleteById(id);
     }
 }

@@ -29,7 +29,10 @@ public class DetailImportOrder {
     @Column(name = "quantity", nullable = false)
     Double quantity;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
+    String description;
+
+    @Column(name = "price", nullable = false)
     Double price;
 
     // Getters and setters
