@@ -7,6 +7,8 @@ import com.example.coffee_shop_chain_management.entity.OTP;
 import com.example.coffee_shop_chain_management.enums.OTPType;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.OTPRepository;
+import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.AccountResponse;
 import com.example.coffee_shop_chain_management.service.AccountService;
 import com.example.coffee_shop_chain_management.service.OTPService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,8 @@ public class NotificationBot extends TelegramLongPollingBot {
             if (userCommands.containsKey(chatId) && userCommands.get(chatId).equals("VERIFY")) {
                 verifyOtp(Integer.parseInt(messageText), chatId);  // Kiểm tra OTP
             } else if (userCommands.containsKey(chatId) && userCommands.get(chatId).equals("IDENTIFIER")) {
-                Account account = accountService.getAccountByEmail(messageText);
+                APIResponse<AccountResponse> accountRespone = accountService.getAccountByEmail(messageText);
+                AccountResponse account = accountRespone.getData();
 
                 if (account != null && account.getChatID() != null) {
                     sendMessage("This email/phone number is already verified.", chatId);
@@ -135,7 +138,9 @@ public class NotificationBot extends TelegramLongPollingBot {
     public void verifyOtp(int otpInput, String chatId) {
         String identifier = pendingUserVerification.get(chatId); // Lấy định danh của người dùng
         if (identifier != null) {
-            Account account = accountService.getAccountByEmail(identifier);
+            APIResponse<AccountResponse> accountRespone = accountService.getAccountByEmail(identifier);
+            AccountResponse account = accountRespone.getData();
+
             if (account != null && account.getChatID() != null) {
                 sendMessage("This email/phone number is already verified.", chatId);
                 userCommands.remove(chatId);

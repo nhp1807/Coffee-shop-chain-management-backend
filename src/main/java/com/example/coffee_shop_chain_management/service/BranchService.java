@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateBranchDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateBranchDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
@@ -11,6 +12,7 @@ import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,8 +23,10 @@ public class BranchService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public List<Branch> getAllBranches(){
-        return branchRepository.findAll();
+    public APIResponse<List<BranchResponse>> getAllBranches(){
+        List<Branch> branches = branchRepository.findAll();
+
+        return new APIResponse<>(branches.stream().map(this::toBranchResponse).toList(), "Branches retrieved successfully", true);
     }
 
     public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO){
@@ -39,29 +43,67 @@ public class BranchService {
 
         Branch newBranch =  branchRepository.save(branch);
 
-        BranchResponse branchResponse = new BranchResponse();
-        branchResponse.setBranchID(newBranch.getBranchID());
-        branchResponse.setAddress(newBranch.getAddress());
-        branchResponse.setPhone(newBranch.getPhone());
-        branchResponse.setFax(newBranch.getFax());
-        branchResponse.setAccountId(newBranch.getAccount().getAccountID());
-
-        return new APIResponse<>(branchResponse, "Branch created successfully", true);
+        return new APIResponse<>(toBranchResponse(newBranch), "Branch created successfully", true);
     }
 
-    public Branch getBranchById(Long id){
-        return branchRepository.findById(id).orElse(null);
+    public APIResponse<BranchResponse> getBranchById(Long id){
+        Branch branch = branchRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Branch not found!"));
+
+        return new APIResponse<>(toBranchResponse(branch), "Branch retrieved successfully", true);
     }
 
-    public Branch updateBranch(Branch branch){
-        return branchRepository.save(branch);
+    public APIResponse<BranchResponse> updateBranch(Long id, UpdateBranchDTO branchDTO){
+        Branch branch = branchRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Branch not found!"));
+
+        if (branchDTO.getAddress() != null) {
+            branch.setAddress(branchDTO.getAddress());
+        }
+
+        if (branchDTO.getPhone() != null) {
+            branch.setPhone(branchDTO.getPhone());
+        }
+
+        if (branchDTO.getFax() != null) {
+            branch.setFax(branchDTO.getFax());
+        }
+
+        if (branchDTO.getAccountId() != null) {
+            Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
+            branch.setAccount(account);
+        }
+
+        branchRepository.save(branch);
+
+        return new APIResponse<>(toBranchResponse(branch), "Branch updated successfully", true);
     }
 
-    public void deleteBranch(Branch branch){
+    public boolean deleteBranch(Branch branch){
+        if(!branchRepository.existsById(branch.getBranchID())){
+            return false;
+        }
+
         branchRepository.delete(branch);
+        return true;
     }
 
-    public void deleteBranchById(Long id){
+    public boolean deleteBranchById(Long id){
+        if (!branchRepository.existsById(id)) {
+            return false;
+        }
+
         branchRepository.deleteById(id);
+        return true;
+    }
+
+    public BranchResponse toBranchResponse(Branch branch) {
+        BranchResponse branchResponse = new BranchResponse();
+        branchResponse.setBranchID(branch.getBranchID());
+        branchResponse.setAddress(branch.getAddress());
+        branchResponse.setPhone(branch.getPhone());
+        branchResponse.setFax(branch.getFax());
+        branchResponse.setAccountId(branch.getAccount().getAccountID());
+        return branchResponse;
     }
 }

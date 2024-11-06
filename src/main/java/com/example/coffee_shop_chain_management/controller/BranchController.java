@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateBranchDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateBranchDTO;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
@@ -23,17 +24,27 @@ public class BranchController {
     }
 
     @GetMapping("/get/all")
-    public List<Branch> getAllBranches() {
+    public APIResponse<List<BranchResponse>> getAllBranches() {
         return branchService.getAllBranches();
     }
 
     @GetMapping("/get/{id}")
-    public Branch getBranchById(@PathVariable Long id) {
+    public APIResponse<BranchResponse> getBranchById(@PathVariable Long id) {
         return branchService.getBranchById(id);
     }
 
     @PostMapping("/create")
     public APIResponse<BranchResponse> createBranch(@RequestBody CreateBranchDTO branchDTO) {
         return branchService.createBranch(branchDTO);
+    }
+
+    @PutMapping("/update/{id}")
+    public APIResponse<BranchResponse> updateBranch(@RequestBody UpdateBranchDTO branchDTO, @PathVariable Long id) {
+        return branchService.updateBranch(id, branchDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public boolean deleteBranch(@PathVariable Long id) {
+        return branchService.deleteBranchById(id);
     }
 }
