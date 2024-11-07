@@ -222,53 +222,6 @@ public class ImportOrderService {
         return new APIResponse<>(null, "Detail import order added successfully", true);
     }
 
-    public APIResponse<ImportOrderResponse> removeDetailImportOrders(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList) {
-        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
-
-        if (importOrder == null) {
-            return new APIResponse<>(null, "Import order not found", false);
-        }
-
-        double total = importOrder.getTotal();
-
-        List<DetailImportOrder> detailImportOrders = importOrder.getDetailImportOrders();
-        for (DetailImportOrderDTO detailDTO : detailImportOrderDTOList) {
-            Material material = materialRepository.findByName(detailDTO.getMaterialName());
-
-            if (material == null) {
-                return new APIResponse<>(null, "Material not found", false);
-            }
-
-            Storage storage = storageRepository.findByMaterial_MaterialID(material.getMaterialID());
-
-            if (storage == null) {
-                return new APIResponse<>(null, "Storage not found", false);
-            }
-
-            if (storage.getQuantity() < detailDTO.getQuantity()) {
-                return new APIResponse<>(null, "Not enough material in storage", false);
-            }
-
-            storage.setQuantity(storage.getQuantity() - detailDTO.getQuantity());
-            storageRepository.save(storage);
-
-            for (DetailImportOrder detailImportOrder : detailImportOrders) {
-                if (Objects.equals(detailImportOrder.getMaterial().getMaterialID(), material.getMaterialID())) {
-                    total -= detailImportOrder.getQuantity() * detailImportOrder.getPrice();
-                    detailImportOrders.remove(detailImportOrder);
-                    break;
-                }
-            }
-        }
-
-        importOrder.setDetailImportOrders(detailImportOrders);
-        importOrder.setTotal(total);
-
-        importOrderRepository.save(importOrder);
-
-        return new APIResponse<>(null, "Detail import order removed successfully", true);
-    }
-
     public APIResponse<ImportOrderResponse> deleteImportOrder(ImportOrder importOrder) {
         if (!importOrderRepository.existsById(importOrder.getImportID())) {
             return new APIResponse<>(null, "Import order not found", false);
