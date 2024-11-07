@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,6 +41,12 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     Branch branch;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ExportOrder> exportOrders;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Timesheet> timesheets;
 
     // Getters and setters
 }

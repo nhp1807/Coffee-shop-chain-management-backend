@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -35,6 +36,7 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         account.setEmail(accountDTO.getEmail());
         account.setRole(accountDTO.getRole());
+        account.setChatID(accountDTO.getChatID());
 
         Account newAccount = accountRepository.save(account);
 
