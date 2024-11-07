@@ -149,7 +149,7 @@ public class ImportOrderService {
 //        return importOrderRepository.save(importOrder);
 //    }
 
-    public APIResponse<ImportOrderResponse> addDetailImportOrder(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList){
+    public APIResponse<ImportOrderResponse> addDetailImportOrders(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList){
         ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
 
         if (importOrder == null) {
@@ -222,7 +222,7 @@ public class ImportOrderService {
         return new APIResponse<>(null, "Detail import order added successfully", true);
     }
 
-    public APIResponse<ImportOrderResponse> removeDetailImportOrder(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList) {
+    public APIResponse<ImportOrderResponse> removeDetailImportOrders(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList) {
         ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
 
         if (importOrder == null) {
