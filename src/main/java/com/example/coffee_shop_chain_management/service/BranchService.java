@@ -12,8 +12,9 @@ import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects
 
 @Service
 public class BranchService {
@@ -23,25 +24,15 @@ public class BranchService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public List<BranchResponse> getAllBranches() {
+    public APIResponse<List<BranchResponse>> getAllBranches() {
         List<Branch> branches = branchRepository.findAll();
 
-        // Chuyển đổi danh sách Branch sang danh sách BranchResponse
-        return branches.stream().map(branch -> {
-            BranchResponse branchResponse = new BranchResponse();
-            branchResponse.setBranchID(branch.getBranchID());
-            branchResponse.setAddress(branch.getAddress());
-            branchResponse.setPhone(branch.getPhone());
-            branchResponse.setFax(branch.getFax());
-            branchResponse.setAccountId(branch.getAccount().getAccountID());
-            return branchResponse;
-        }).collect(Collectors.toList());
+        return new APIResponse<>(branches.stream().map(this::toBranchResponse).toList(), "Branches retrieved successfully", true);
     }
 
-
-    public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO){
-        if (branchRepository.existsByAddress(branchDTO.getAddress())){
-            return null;
+    public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO) {
+        if (branchRepository.existsByAddress(branchDTO.getAddress())) {
+            return new APIResponse<>(null, "Branch already exists", false);
         }
 
         Branch branch = new Branch();
@@ -51,71 +42,78 @@ public class BranchService {
         Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
         branch.setAccount(account);
 
-        Branch newBranch =  branchRepository.save(branch);
+        Branch newBranch = branchRepository.save(branch);
 
-        BranchResponse branchResponse = new BranchResponse();
-        branchResponse.setBranchID(newBranch.getBranchID());
-        branchResponse.setAddress(newBranch.getAddress());
-        branchResponse.setPhone(newBranch.getPhone());
-        branchResponse.setFax(newBranch.getFax());
-        branchResponse.setAccountId(newBranch.getAccount().getAccountID());
-
-        return new APIResponse<>(branchResponse, "Branch created successfully", true);
+        return new APIResponse<>(toBranchResponse(newBranch), "Branch created successfully", true);
     }
 
-    public BranchResponse getBranchById(Long id) {
-        Branch branch = branchRepository.findById(id).orElse(null);
+    public APIResponse<BranchResponse> getBranchById(Long id) {
+        Branch branch = branchRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Branch not found!"));
 
-        // Nếu branch không tồn tại, trả về null
-        if (branch == null) {
-            return null;
+        return new APIResponse<>(toBranchResponse(branch), "Branch retrieved successfully", true);
+    }
+
+    public APIResponse<BranchResponse> updateBranch(Long id, UpdateBranchDTO branchDTO) {
+        Branch branch = branchRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Branch not found!"));
+
+        if (branchDTO.getAddress() != null) {
+            branch.setAddress(branchDTO.getAddress());
         }
 
-        // Tạo đối tượng BranchResponse và gán giá trị từ branch
+        if (branchDTO.getPhone() != null) {
+            branch.setPhone(branchDTO.getPhone());
+        }
+
+        if (branchDTO.getFax() != null) {
+            branch.setFax(branchDTO.getFax());
+        }
+
+        if (branchDTO.getAccountId() != null) {
+            if (!branchDTO.getAccountId().equals(branch.getAccount().getAccountID())) {
+                Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
+                // Check any branch have this account
+                List<Branch> branches = branchRepository.findAll();
+                for (Branch b : branches) {
+                    if (Objects.equals(b.getAccount().getAccountID(), branchDTO.getAccountId())) {
+                        return new APIResponse<>(toBranchResponse(branch), "This account has been used in other branch", false);
+                    }
+                }
+                branch.setAccount(account);
+            }
+        }
+
+        branchRepository.save(branch);
+
+        return new APIResponse<>(toBranchResponse(branch), "Branch updated successfully", true);
+    }
+
+    public APIResponse<BranchResponse> deleteBranch(Branch branch) {
+        if (!branchRepository.existsById(branch.getBranchID())) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        branchRepository.delete(branch);
+        return new APIResponse<>(null, "Branch deleted successfully", true);
+    }
+
+    public APIResponse<BranchResponse> deleteBranchById(Long id) {
+        if (!branchRepository.existsById(id)) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        branchRepository.deleteById(id);
+        return new APIResponse<>(null, "Branch deleted successfully", true);
+    }
+
+    public BranchResponse toBranchResponse(Branch branch) {
         BranchResponse branchResponse = new BranchResponse();
         branchResponse.setBranchID(branch.getBranchID());
         branchResponse.setAddress(branch.getAddress());
         branchResponse.setPhone(branch.getPhone());
         branchResponse.setFax(branch.getFax());
         branchResponse.setAccountId(branch.getAccount().getAccountID());
-
         return branchResponse;
-    }
-
-
-    public Branch updateBranch(Long branchId, UpdateBranchDTO branchDTO){
-        Branch existingBranch = branchRepository.findById(branchId)
-                .orElseThrow(() -> new RuntimeException("Branch not found!"));
-
-        if (branchDTO.getAddress() != null) {
-            existingBranch.setAddress(branchDTO.getAddress());
-        }
-
-        if (branchDTO.getPhone() != null) {
-            existingBranch.setPhone(branchDTO.getPhone());
-        }
-
-        if (branchDTO.getFax() != null) {
-            existingBranch.setFax(branchDTO.getFax());
-        }
-
-        branchRepository.save(existingBranch);
-        return existingBranch;
-    }
-
-    public boolean deleteBranch(Branch branch){
-        if (!branchRepository.existsById(branch.getBranchID())) {
-            return false;
-        }
-        branchRepository.delete(branch);
-        return true;
-    }
-
-    public boolean deleteBranchById(Long id){
-        if (!branchRepository.existsById(id)) {
-            return false;
-        }
-        branchRepository.deleteById(id);
-        return true;
     }
 }

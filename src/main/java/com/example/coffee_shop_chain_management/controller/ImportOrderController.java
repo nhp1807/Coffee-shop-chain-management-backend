@@ -38,12 +38,12 @@ public class ImportOrderController {
     }
 
 //    @PutMapping("/update/{id}")
-//    public ImportOrder updateImportOrder(@RequestBody CreateImportOrderDTO importOrderDTO, @PathVariable Long id) {
+//    public APIResponse<ImportOrderResponse> updateImportOrder(@RequestBody CreateImportOrderDTO importOrderDTO, @PathVariable Long id) {
 //        return importOrderService.updateImportOrder(id, importOrderDTO);
 //    }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteImportOrder(@PathVariable Long id) {
-        importOrderService.deleteImportOrderById(id);
+    public APIResponse<ImportOrderResponse> deleteImportOrder(@PathVariable Long id) {
+        return importOrderService.deleteImportOrderById(id);
     }
 }

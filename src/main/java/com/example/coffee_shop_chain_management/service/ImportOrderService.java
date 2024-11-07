@@ -145,15 +145,98 @@ public class ImportOrderService {
         return importOrderRepository.findById(id).orElse(null);
     }
 
-    public ImportOrder updateImportOrder(ImportOrder importOrder) {
-        return importOrderRepository.save(importOrder);
+//    public APIResponse<ImportOrderResponse> updateImportOrder(UpdateImportOrderDTO importOrder) {
+//        return importOrderRepository.save(importOrder);
+//    }
+
+    public APIResponse<ImportOrderResponse> addDetailImportOrders(Long id, List<DetailImportOrderDTO> detailImportOrderDTOList){
+        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
+
+        if (importOrder == null) {
+            return new APIResponse<>(null, "Import order not found", false);
+        }
+
+        double total = importOrder.getTotal();
+
+        List<DetailImportOrder> detailImportOrders = importOrder.getDetailImportOrders();
+        for (DetailImportOrderDTO detailDTO : detailImportOrderDTOList) {
+            Material material = materialRepository.findByName(detailDTO.getMaterialName());
+
+            if (material == null) {
+                material = new Material();
+                material.setName(detailDTO.getMaterialName());
+                materialRepository.save(material);
+
+                List<Branch> branches = branchRepository.findAll();
+                for (Branch b : branches) {
+                    Storage newStorage = new Storage();
+                    newStorage.setMaterial(material);
+                    newStorage.setBranch(b);
+
+                    if (Objects.equals(b.getBranchID(), importOrder.getBranch().getBranchID())) {
+                        newStorage.setQuantity(detailDTO.getQuantity());
+                        storageRepository.save(newStorage);
+                        continue;
+                    }
+
+                    newStorage.setQuantity(0d);
+                    storageRepository.save(newStorage);
+                }
+            } else {
+                Storage storage = storageRepository.findByMaterial_MaterialID(material.getMaterialID());
+
+                if (storage != null) {
+                    storage.setQuantity(storage.getQuantity() + detailDTO.getQuantity());
+                    storageRepository.save(storage);
+                } else {
+                    Storage newStorage = new Storage();
+                    newStorage.setMaterial(material);
+                    newStorage.setQuantity(detailDTO.getQuantity());
+                    newStorage.setBranch(importOrder.getBranch());
+                    storageRepository.save(newStorage);
+                }
+            }
+
+            DetailImportOrder detailImportOrder = new DetailImportOrder();
+            DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
+            detailImportOrderId.setImportOrderId(importOrder.getImportID());
+            detailImportOrderId.setMaterialId(material.getMaterialID());
+            detailImportOrder.setId(detailImportOrderId);
+
+            detailImportOrder.setMaterial(material);
+            detailImportOrder.setQuantity(detailDTO.getQuantity());
+            detailImportOrder.setImportOrder(importOrder);
+            detailImportOrder.setPrice(detailDTO.getPrice());
+            detailImportOrder.setDescription(detailDTO.getDescription());
+
+            total += detailDTO.getQuantity() * detailDTO.getPrice();
+
+            detailImportOrders.add(detailImportOrder);
+        }
+
+        importOrder.setDetailImportOrders(detailImportOrders);
+        importOrder.setTotal(total);
+
+        importOrderRepository.save(importOrder);
+
+        return new APIResponse<>(null, "Detail import order added successfully", true);
     }
 
-    public void deleteImportOrder(ImportOrder importOrder) {
+    public APIResponse<ImportOrderResponse> deleteImportOrder(ImportOrder importOrder) {
+        if (!importOrderRepository.existsById(importOrder.getImportID())) {
+            return new APIResponse<>(null, "Import order not found", false);
+        }
+
         importOrderRepository.delete(importOrder);
+        return new APIResponse<>(null, "Import order deleted successfully", true);
     }
 
-    public void deleteImportOrderById(Long id) {
+    public APIResponse<ImportOrderResponse> deleteImportOrderById(Long id) {
+        if (!importOrderRepository.existsById(id)) {
+            return new APIResponse<>(null, "Import order not found", false);
+        }
+
         importOrderRepository.deleteById(id);
+        return new APIResponse<>(null, "Import order deleted successfully", true);
     }
 }
