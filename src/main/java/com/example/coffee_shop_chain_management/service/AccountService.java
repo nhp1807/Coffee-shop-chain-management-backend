@@ -4,11 +4,13 @@ import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
+import com.example.coffee_shop_chain_management.response.AccountResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -17,9 +19,29 @@ public class AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<Account> getAllAccounts(){
-        return accountRepository.findAll();
+    public List<AccountResponse> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+
+        // Chuyển đổi danh sách Account thành danh sách AccountResponse
+        return accounts.stream().map(account -> {
+            AccountResponse accountResponse = new AccountResponse();
+            accountResponse.setAccountId(account.getAccountID());
+            accountResponse.setUsername(account.getUsername());
+            accountResponse.setEmail(account.getEmail());
+            accountResponse.setRole(account.getRole());
+            accountResponse.setChatID(account.getChatID());
+
+            // Kiểm tra nếu branch không phải null, thì mới lấy branchID
+            if (account.getBranch() != null) {
+                accountResponse.setBranchID(account.getBranch().getBranchID());
+            } else {
+                accountResponse.setBranchID(null);
+            }
+
+            return accountResponse;
+        }).collect(Collectors.toList());
     }
+
 
     public Account createAccount(CreateAccountDTO accountDTO){
         if(accountRepository.existsByUsername(accountDTO.getUsername())){
@@ -31,12 +53,27 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         account.setEmail(accountDTO.getEmail());
         account.setRole(accountDTO.getRole());
+        account.setChatID(accountDTO.getChatID());
 
         return accountRepository.save(account);
     }
 
-    public Account getAccountById(Long id){
-        return accountRepository.findById(id).orElse(null);
+    public AccountResponse getAccountById(Long id){
+        Account account = accountRepository.findById(id).orElse(null);
+        if (account == null) {
+            throw new RuntimeException("Account not found!");
+        }
+
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setAccountId(account.getAccountID());
+        accountResponse.setUsername(account.getUsername());
+        accountResponse.setEmail(account.getEmail());
+        accountResponse.setRole(account.getRole());
+        accountResponse.setChatID(account.getChatID());
+        accountResponse.setBranchID(account.getBranch().getBranchID());
+
+        return accountResponse;
+
     }
 
     public Account getAccountByUsername(String username){

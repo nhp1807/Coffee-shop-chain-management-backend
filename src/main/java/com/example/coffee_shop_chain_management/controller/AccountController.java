@@ -3,6 +3,7 @@ package com.example.coffee_shop_chain_management.controller;
 import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
+import com.example.coffee_shop_chain_management.response.AccountResponse;
 import com.example.coffee_shop_chain_management.service.AccountService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +25,12 @@ public class AccountController {
     }
 
     @GetMapping("/get/all")
-    public List<Account> getAllAccounts() {
+    public List<AccountResponse> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
     @GetMapping("/get/{id}")
-    public Account getAccountById(@PathVariable Long id) {
+    public AccountResponse getAccountById(@PathVariable Long id) {
         return accountService.getAccountById(id);
     }
 
