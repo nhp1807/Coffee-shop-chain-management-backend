@@ -71,12 +71,22 @@ public class SupplierService {
         return new APIResponse<>(toSupplierResponse(supplier), "Supplier updated successfully", true);
     }
 
-    public void deleteSupplier(Supplier supplier) {
+    public APIResponse<SupplierResponse> deleteSupplier(Supplier supplier) {
+        if(supplierRepository.existsById(supplier.getSupplierID())){
+            return new APIResponse<>(null, "Supplier not found", false);
+        }
+
         supplierRepository.delete(supplier);
+        return new APIResponse<>(null, "Supplier deleted successfully", true);
     }
 
-    public void deleteSupplierById(Long id) {
+    public APIResponse<SupplierResponse> deleteSupplierById(Long id) {
+        if (!supplierRepository.existsById(id)) {
+            return new APIResponse<>(null, "Supplier not found", false);
+        }
+
         supplierRepository.deleteById(id);
+        return new APIResponse<>(null, "Supplier deleted successfully", true);
     }
 
     public SupplierResponse toSupplierResponse(Supplier supplier) {

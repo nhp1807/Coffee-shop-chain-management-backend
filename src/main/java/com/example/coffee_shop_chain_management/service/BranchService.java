@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BranchService {
@@ -23,14 +24,14 @@ public class BranchService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public APIResponse<List<BranchResponse>> getAllBranches(){
+    public APIResponse<List<BranchResponse>> getAllBranches() {
         List<Branch> branches = branchRepository.findAll();
 
         return new APIResponse<>(branches.stream().map(this::toBranchResponse).toList(), "Branches retrieved successfully", true);
     }
 
-    public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO){
-        if (branchRepository.existsByAddress(branchDTO.getAddress())){
+    public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO) {
+        if (branchRepository.existsByAddress(branchDTO.getAddress())) {
             return null;
         }
 
@@ -41,19 +42,19 @@ public class BranchService {
         Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
         branch.setAccount(account);
 
-        Branch newBranch =  branchRepository.save(branch);
+        Branch newBranch = branchRepository.save(branch);
 
         return new APIResponse<>(toBranchResponse(newBranch), "Branch created successfully", true);
     }
 
-    public APIResponse<BranchResponse> getBranchById(Long id){
+    public APIResponse<BranchResponse> getBranchById(Long id) {
         Branch branch = branchRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Branch not found!"));
 
         return new APIResponse<>(toBranchResponse(branch), "Branch retrieved successfully", true);
     }
 
-    public APIResponse<BranchResponse> updateBranch(Long id, UpdateBranchDTO branchDTO){
+    public APIResponse<BranchResponse> updateBranch(Long id, UpdateBranchDTO branchDTO) {
         Branch branch = branchRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Branch not found!"));
 
@@ -70,8 +71,17 @@ public class BranchService {
         }
 
         if (branchDTO.getAccountId() != null) {
-            Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
-            branch.setAccount(account);
+            if (!branchDTO.getAccountId().equals(branch.getAccount().getAccountID())) {
+                Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
+                // Check any branch have this account
+                List<Branch> branches = branchRepository.findAll();
+                for (Branch b : branches) {
+                    if (Objects.equals(b.getAccount().getAccountID(), branchDTO.getAccountId())) {
+                        return new APIResponse<>(toBranchResponse(branch), "This account has been used in other branch", false);
+                    }
+                }
+                branch.setAccount(account);
+            }
         }
 
         branchRepository.save(branch);
@@ -79,22 +89,22 @@ public class BranchService {
         return new APIResponse<>(toBranchResponse(branch), "Branch updated successfully", true);
     }
 
-    public boolean deleteBranch(Branch branch){
-        if(!branchRepository.existsById(branch.getBranchID())){
-            return false;
+    public APIResponse<BranchResponse> deleteBranch(Branch branch) {
+        if (!branchRepository.existsById(branch.getBranchID())) {
+            return new APIResponse<>(null, "Branch not found", false);
         }
 
         branchRepository.delete(branch);
-        return true;
+        return new APIResponse<>(null, "Branch deleted successfully", true);
     }
 
-    public boolean deleteBranchById(Long id){
+    public APIResponse<BranchResponse> deleteBranchById(Long id) {
         if (!branchRepository.existsById(id)) {
-            return false;
+            return new APIResponse<>(null, "Branch not found", false);
         }
 
         branchRepository.deleteById(id);
-        return true;
+        return new APIResponse<>(null, "Branch deleted successfully", true);
     }
 
     public BranchResponse toBranchResponse(Branch branch) {

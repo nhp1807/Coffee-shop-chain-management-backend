@@ -45,7 +45,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteSupplier(@PathVariable Long id) {
-        supplierService.deleteSupplierById(id);
+    public APIResponse<SupplierResponse> deleteSupplier(@PathVariable Long id) {
+        return supplierService.deleteSupplierById(id);
     }
 }

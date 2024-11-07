@@ -83,22 +83,22 @@ public class AccountService {
         return new APIResponse<>(toAccountResponse(account), "Account updated successfully!", true);
     }
 
-    public boolean deleteAccount(Account account){
+    public APIResponse<AccountResponse> deleteAccount(Account account){
         if (!accountRepository.existsById(account.getAccountID())) {
-            return false;
+            return new APIResponse<>(null, "Account not found!", false);
         }
 
         accountRepository.delete(account);
-        return true;
+        return new APIResponse<>(null, "Account deleted successfully!", true);
     }
 
-    public boolean deleteAccountById(Long id){
+    public APIResponse<AccountResponse> deleteAccountById(Long id){
         if (!accountRepository.existsById(id)) {
-            return false;
+            return new APIResponse<>(null, "Account not found!", false);
         }
 
         accountRepository.deleteById(id);
-        return true;
+        return new APIResponse<>(null, "Account deleted successfully!", true);
     }
 
     public AccountResponse toAccountResponse(Account account){

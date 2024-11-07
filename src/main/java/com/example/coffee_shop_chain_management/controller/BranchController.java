@@ -44,7 +44,7 @@ public class BranchController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean deleteBranch(@PathVariable Long id) {
+    public APIResponse<BranchResponse> deleteBranch(@PathVariable Long id) {
         return branchService.deleteBranchById(id);
     }
 }
