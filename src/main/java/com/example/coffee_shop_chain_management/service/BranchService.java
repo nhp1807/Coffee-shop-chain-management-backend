@@ -32,7 +32,7 @@ public class BranchService {
 
     public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO) {
         if (branchRepository.existsByAddress(branchDTO.getAddress())) {
-            return null;
+            return new APIResponse<>(null, "Branch already exists", false);
         }
 
         Branch branch = new Branch();

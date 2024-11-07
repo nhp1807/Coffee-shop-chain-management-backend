@@ -24,7 +24,7 @@ public class SupplierService {
 
     public APIResponse<SupplierResponse> createSupplier(CreateSupplierDTO supplierDTO) {
         if (supplierRepository.existsByName(supplierDTO.getName())) {
-            return null;
+            return new APIResponse<>(null, "Supplier already exists", false);
         }
 
         Supplier supplier = new Supplier();
@@ -41,7 +41,7 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(id).orElse(null);
 
         if (supplier == null) {
-            return null;
+            return new APIResponse<>(null, "Supplier not found", false);
         }
 
         return new APIResponse<>(toSupplierResponse(supplier), "Supplier retrieved successfully", true);
@@ -51,7 +51,7 @@ public class SupplierService {
         Supplier supplier = supplierRepository.findById(id).orElse(null);
 
         if (supplier == null) {
-            return null;
+            return new APIResponse<>(null, "Supplier not found", false);
         }
 
         if (supplierDTO.getName() != null) {
