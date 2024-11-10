@@ -27,7 +27,7 @@ public class Timesheet {
     String shift;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employeeId",referencedColumnName = "employeeid", nullable = false)
     Employee employee;
 
     // Getters and setters

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects
+import java.util.Objects;
 
 @Service
 public class BranchService {
@@ -40,6 +40,7 @@ public class BranchService {
         branch.setPhone(branchDTO.getPhone());
         branch.setFax(branchDTO.getFax());
         Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
+
         branch.setAccount(account);
 
         Branch newBranch = branchRepository.save(branch);
