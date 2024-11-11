@@ -28,8 +28,11 @@ public class Branch {
     @Column(name = "fax", nullable = false)
     String fax;
 
-    @OneToMany(mappedBy = "branch")
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Employee> employees;
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Storage> storages;
 
     @OneToOne
     @JoinColumn(name = "account_id", nullable = false)

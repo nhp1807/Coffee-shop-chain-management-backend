@@ -28,10 +28,13 @@ public class Product {
     @Column(name = "price", nullable = false)
     Double price;
 
-    @OneToMany(mappedBy = "product")
+    @Column(name = "image", nullable = false)
+    String image;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailExportOrder> detailExportOrders;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProductMaterial> productMaterials;
 
     // Getters and setters

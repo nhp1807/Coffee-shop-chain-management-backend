@@ -3,15 +3,15 @@ package com.example.coffee_shop_chain_management.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAccountDTO {
-    String username;
-    String password;
-    String role;
-    String email;
-    String chatID;
+public class CreateTimesheetDTO {
+    LocalDateTime date;
+    String shift;
+    Long employeeId;
 }

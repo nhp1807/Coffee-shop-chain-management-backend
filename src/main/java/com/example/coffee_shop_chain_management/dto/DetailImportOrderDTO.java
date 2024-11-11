@@ -8,10 +8,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAccountDTO {
-    String username;
-    String password;
-    String role;
-    String email;
-    String chatID;
+public class DetailImportOrderDTO {
+    String materialName;
+    Double quantity;
+    Double price;
+    String description;
 }
+

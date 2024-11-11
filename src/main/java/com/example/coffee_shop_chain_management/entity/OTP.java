@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,16 +26,16 @@ public class OTP {
     String email;
 
     @Column(name = "created_at")
-    Long createdAt;
+    LocalDateTime createdAt;
 
     @Column(name = "expired_at")
-    Long expiredAt;
+    LocalDateTime expiredAt;
 
     @Column(name = "is_used")
     Boolean isUsed;
 
     @Column(name = "used_at")
-    Long usedAt;
+    LocalDateTime usedAt;
 
     @Column(name = "otp_type")
     OTPType otpType;
@@ -41,8 +43,10 @@ public class OTP {
     public OTP(int otp, String email, OTPType otpType) {
         this.otpCode = otp;
         this.email = email;
-        this.createdAt = System.currentTimeMillis();
-        this.expiredAt = System.currentTimeMillis() + 300000;
+//        this.createdAt = System.currentTimeMillis();
+//        this.expiredAt = System.currentTimeMillis() + 300000;
+        this.createdAt = LocalDateTime.now();
+        this.expiredAt = LocalDateTime.now().plusMinutes(5);
         this.isUsed = false;
         this.usedAt = null;
         this.otpType = otpType;

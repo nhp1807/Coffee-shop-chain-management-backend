@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -20,7 +21,7 @@ public class Timesheet {
     Long timesheetID;
 
     @Column(name = "date", nullable = false)
-    Date date;
+    LocalDateTime date;
 
     @Column(name = "shift", nullable = false)
     String shift;

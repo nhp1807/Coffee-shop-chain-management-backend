@@ -1,4 +1,4 @@
-package com.example.coffee_shop_chain_management.dto;
+package com.example.coffee_shop_chain_management.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,10 +8,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAccountDTO {
+public class AccountResponse {
+    Long accountID;
     String username;
-    String password;
     String role;
-    String email;
     String chatID;
+    String email;
+    Long branchID;
 }

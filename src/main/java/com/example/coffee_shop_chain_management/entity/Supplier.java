@@ -28,7 +28,7 @@ public class Supplier {
     @Column(name = "address", nullable = false)
     String address;
 
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ImportOrder> importOrders;
 
     // Getters and setters

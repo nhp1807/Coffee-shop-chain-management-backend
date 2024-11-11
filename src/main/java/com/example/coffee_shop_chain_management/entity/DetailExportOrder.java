@@ -29,7 +29,7 @@ public class DetailExportOrder {
     @Column(name = "quantity", nullable = false)
     Integer quantity;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     String description;
 
     @Column(name = "price", nullable = false)
