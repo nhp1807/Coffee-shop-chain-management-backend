@@ -1,42 +1,45 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Account Management</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}"/>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bootstrap 4 Tabs with Hidden Content</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Coffee Shop</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Orders</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Products</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Reports</a>
-            </li>
-        </ul>
-        <button class="btn btn-danger ml-auto" onclick="logout()">Logout</button>
+
+<div class="container mt-5">
+  <!-- Tabs cho Product -->
+  <ul class="nav nav-tabs" id="productTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="importorder-tab" data-toggle="tab" href="#importorder" role="tab" aria-controls="importorder" aria-selected="true">Import Order</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="material-tab" data-toggle="tab" href="#material" role="tab" aria-controls="material" aria-selected="false">Material</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="storage-tab" data-toggle="tab" href="#storage" role="tab" aria-controls="storage" aria-selected="false">Storage</a>
+    </li>
+  </ul>
+
+  <!-- Nội dung cho từng tab -->
+  <div class="tab-content" id="productTabContent">
+    <div class="tab-pane fade show active" id="importorder" role="tabpanel" aria-labelledby="importorder-tab">
+      <h3>Import Order Page</h3>
+      <p>Đây là nội dung của Import Order.</p>
     </div>
-</nav>
+    <div class="tab-pane fade" id="material" role="tabpanel" aria-labelledby="material-tab">
+      <h3>Material Page</h3>
+      <p>Đây là nội dung của Material.</p>
+    </div>
+    <div class="tab-pane fade" id="storage" role="tabpanel" aria-labelledby="storage-tab">
+      <h3>Storage Page</h3>
+      <p>Đây là nội dung của Storage.</p>
+    </div>
+  </div>
+</div>
 
-
-<!-- Link đến file JavaScript -->
-<script th:src="@{/js/common.js}"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
