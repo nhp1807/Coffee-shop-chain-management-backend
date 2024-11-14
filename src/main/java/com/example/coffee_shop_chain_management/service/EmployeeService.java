@@ -38,7 +38,7 @@ public class EmployeeService {
     }
 
 
-    public Employee createEmployee(CreateEmployeeDTO employeeDTO) {
+    public APIResponse<EmployeeResponse> createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());
         employee.setDob(employeeDTO.getDob());
@@ -50,7 +50,9 @@ public class EmployeeService {
         Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
         employee.setBranch(branch);
 
-        return employeeRepository.save(employee);
+        Employee newEmployee = employeeRepository.save(employee);
+
+        return new APIResponse<>(toEmployeeResponse(employeeRepository.save(newEmployee)), "Employee created successfully", true);
     }
 
     public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {

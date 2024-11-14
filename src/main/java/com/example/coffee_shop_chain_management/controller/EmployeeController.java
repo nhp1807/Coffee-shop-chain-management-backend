@@ -38,9 +38,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/create")
-    public Employee createEmployee(@RequestBody CreateEmployeeDTO employeeDTO) {
+    public APIResponse<EmployeeResponse> createEmployee(@RequestBody CreateEmployeeDTO employeeDTO) {
         return employeeService.createEmployee(employeeDTO);
-
     }
 
     @PutMapping("/update/{id}")
