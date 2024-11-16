@@ -32,8 +32,8 @@ public class Account {
     @Column(name = "email")
     String email;
 
-    @OneToOne(mappedBy = "account")
-    @JoinColumn(name = "branch_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "branch_id")
     Branch branch;
 
     // Getters and setters

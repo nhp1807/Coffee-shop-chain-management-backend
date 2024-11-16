@@ -3,9 +3,12 @@ package com.example.coffee_shop_chain_management.service;
 import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
+import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
+import com.example.coffee_shop_chain_management.repository.BranchRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.AccountResponse;
+import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.util.stream.Collectors;
 public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private BranchRepository branchRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -36,7 +41,9 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
         account.setEmail(accountDTO.getEmail());
         account.setRole(accountDTO.getRole());
-        account.setChatID(accountDTO.getChatID());
+
+        Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
+        account.setBranch(branch);
 
         Account newAccount = accountRepository.save(account);
 
@@ -78,6 +85,11 @@ public class AccountService {
 
         if (accountDTO.getChatID() != null) {
             account.setChatID(accountDTO.getChatID());
+        }
+
+        if (accountDTO.getBranchID() != null) {
+            Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
+            account.setBranch(branch);
         }
 
         accountRepository.save(account);

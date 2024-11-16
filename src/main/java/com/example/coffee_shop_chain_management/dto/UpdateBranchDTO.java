@@ -12,5 +12,4 @@ public class UpdateBranchDTO {
     String address;
     String phone;
     String fax;
-    Long accountId;
 }

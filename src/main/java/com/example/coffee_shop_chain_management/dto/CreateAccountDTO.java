@@ -13,5 +13,5 @@ public class CreateAccountDTO {
     String password;
     String role;
     String email;
-    String chatID;
+    Long branchID;
 }
