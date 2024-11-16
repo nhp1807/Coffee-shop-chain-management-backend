@@ -39,9 +39,6 @@ public class BranchService {
         branch.setAddress(branchDTO.getAddress());
         branch.setPhone(branchDTO.getPhone());
         branch.setFax(branchDTO.getFax());
-        Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
-
-        branch.setAccount(account);
 
         Branch newBranch = branchRepository.save(branch);
 
@@ -69,20 +66,6 @@ public class BranchService {
 
         if (branchDTO.getFax() != null) {
             branch.setFax(branchDTO.getFax());
-        }
-
-        if (branchDTO.getAccountId() != null) {
-            if (!branchDTO.getAccountId().equals(branch.getAccount().getAccountID())) {
-                Account account = accountRepository.findById(branchDTO.getAccountId()).orElse(null);
-                // Check any branch have this account
-                List<Branch> branches = branchRepository.findAll();
-                for (Branch b : branches) {
-                    if (Objects.equals(b.getAccount().getAccountID(), branchDTO.getAccountId())) {
-                        return new APIResponse<>(toBranchResponse(branch), "This account has been used in other branch", false);
-                    }
-                }
-                branch.setAccount(account);
-            }
         }
 
         branchRepository.save(branch);
@@ -114,7 +97,6 @@ public class BranchService {
         branchResponse.setAddress(branch.getAddress());
         branchResponse.setPhone(branch.getPhone());
         branchResponse.setFax(branch.getFax());
-        branchResponse.setAccountId(branch.getAccount().getAccountID());
         return branchResponse;
     }
 }

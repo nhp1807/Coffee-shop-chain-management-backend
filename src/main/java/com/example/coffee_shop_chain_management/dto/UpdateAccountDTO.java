@@ -12,4 +12,5 @@ public class UpdateAccountDTO {
     String password;
     String email;
     String chatID;
+    Long branchID;
 }

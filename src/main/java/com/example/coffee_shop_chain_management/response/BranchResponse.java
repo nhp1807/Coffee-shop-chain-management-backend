@@ -13,5 +13,4 @@ public class BranchResponse {
     String address;
     String phone;
     String fax;
-    Long accountId;
 }

@@ -12,6 +12,4 @@ public class CreateBranchDTO {
     String address;
     String phone;
     String fax;
-    Long accountId;
-
 }
