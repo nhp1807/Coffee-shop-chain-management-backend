@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DetailImportOrderRepository extends JpaRepository<DetailImportOrder, DetailImportOrderId> {
-    // Truy vấn chi tiết đơn hàng nhập
+    DetailImportOrder findDetailImportOrderByImportOrder_ImportIDAndMaterial_MaterialID(Long importOrderId, Long materialId);
 }

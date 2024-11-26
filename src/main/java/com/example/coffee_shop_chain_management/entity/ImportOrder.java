@@ -11,7 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "import_order")
@@ -30,6 +29,9 @@ public class ImportOrder {
     @Column(name = "date", nullable = false)
     LocalDateTime date;
 
+    @Column(name = "status", nullable = false)
+    Boolean status;
+
     @ManyToOne
     @JoinColumn(name = "supplier_id", nullable = false)
     Supplier supplier;
@@ -42,5 +44,9 @@ public class ImportOrder {
     List<DetailImportOrder> detailImportOrders;
 
     // Getters and setters
+
+    public ImportOrder(){
+        this.status = false;
+    }
 }
 

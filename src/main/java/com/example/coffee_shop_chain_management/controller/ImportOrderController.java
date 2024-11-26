@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateImportOrderDTO;
+import com.example.coffee_shop_chain_management.dto.DetailImportOrderDTO;
 import com.example.coffee_shop_chain_management.entity.ImportOrder;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ImportOrderResponse;
@@ -41,6 +42,11 @@ public class ImportOrderController {
 //    public APIResponse<ImportOrderResponse> updateImportOrder(@RequestBody CreateImportOrderDTO importOrderDTO, @PathVariable Long id) {
 //        return importOrderService.updateImportOrder(id, importOrderDTO);
 //    }
+
+    @PutMapping("/add/{id}")
+    public APIResponse<ImportOrderResponse> addDetailImportOrder(@RequestBody DetailImportOrderDTO importOrderDTO, @PathVariable Long id) {
+        return importOrderService.addDetailImportOrder(id, importOrderDTO);
+    }
 
     @DeleteMapping("/delete/{id}")
     public APIResponse<ImportOrderResponse> deleteImportOrder(@PathVariable Long id) {
