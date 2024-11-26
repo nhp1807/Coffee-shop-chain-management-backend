@@ -34,8 +34,8 @@ public class Branch {
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Storage> storages;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @OneToOne(mappedBy = "branch")
+    @JoinColumn(name = "account_id")
     Account account;
 
     // Getters and setters

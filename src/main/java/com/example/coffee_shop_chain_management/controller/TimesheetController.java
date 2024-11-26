@@ -24,12 +24,12 @@ public class TimesheetController {
     }
 
     @GetMapping("/get/all")
-    public List<TimesheetResponse> getAllTimesheets() {
+    public APIResponse<List<TimesheetResponse>> getAllTimesheets() {
         return timesheetService.getAllTimesheets();
     }
 
     @GetMapping("/get/{id}")
-    public TimesheetResponse getTimesheetById(@PathVariable Long id) {
+    public APIResponse<TimesheetResponse> getTimesheetById(@PathVariable Long id) {
         return timesheetService.getTimesheetById(id);
     }
 
@@ -39,12 +39,12 @@ public class TimesheetController {
     }
 
     @PutMapping("/update/{id}")
-    public Timesheet updateTimesheet(@RequestBody UpdateTimesheetDTO timesheet, @PathVariable Long id) {
+    public APIResponse<TimesheetResponse> updateTimesheet(@RequestBody UpdateTimesheetDTO timesheet, @PathVariable Long id) {
         return timesheetService.updateTimesheet(id, timesheet);
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean deleteTimesheet(@PathVariable Long id) {
+    public APIResponse<TimesheetResponse> deleteTimesheet(@PathVariable Long id) {
         return timesheetService.deleteTimesheetById(id);
     }
 }
