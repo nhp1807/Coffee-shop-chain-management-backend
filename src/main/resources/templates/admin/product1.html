@@ -105,6 +105,21 @@
     <!-- Main Content -->
     <div class="container-fluid tab-content">
         <h2 class="mt-3">Product List</h2>
+
+        <!-- Add Item & Search -->
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <button class="btn btn-success" onclick="addItem()">
+                <i class="fa fa-plus"></i> Add Item
+            </button>
+            <div class="input-group w-50">
+                <input type="text" class="form-control" id="searchItem" placeholder="Search item...">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Table -->
         <table class="table table-striped mt-3">
             <thead>
                 <tr>
@@ -141,6 +156,12 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        function addItem() {
+            alert('Add Item functionality is not implemented yet.');
+        }
+    </script>
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
