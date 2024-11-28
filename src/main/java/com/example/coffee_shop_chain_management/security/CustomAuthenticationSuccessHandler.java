@@ -25,15 +25,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (isAdmin) {
 //            responseBody.put("redirectUrl", "/admin/home");
             responseBodyJson.put("redirectUrl", "/admin/home");
-            responseBodyJson.put("role", "admin");
+            responseBodyJson.put("username", authentication.getName());
+            responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
+            responseBodyJson.put("status", "success");
         } else if (isManager) {
 //            responseBody.put("redirectUrl", "/manager/home");
             responseBodyJson.put("redirectUrl", "/manager/home");
-            responseBodyJson.put("role", "manager");
+            responseBodyJson.put("username", authentication.getName());
+            responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
+            responseBodyJson.put("status", "success");
         } else {
 //            responseBody.put("redirectUrl", "/home");
             responseBodyJson.put("redirectUrl", "/home");
-            responseBodyJson.put("role", "user");
+            responseBodyJson.put("username", authentication.getName());
+            responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
+            responseBodyJson.put("status", "success");
         }
 
         // Trả về phản hồi dưới dạng JSON
