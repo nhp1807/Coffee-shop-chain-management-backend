@@ -13,6 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -31,12 +36,17 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/manager/**").hasRole("MANAGER");
                     registry.anyRequest().authenticated();
                 })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
-                            .successHandler(new AuthenticationSuccessHandler())
+                            .successHandler(new CustomAuthenticationSuccessHandler())
                             .permitAll();
                 })
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
                 .build();
     }
 
@@ -56,5 +66,18 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Địa chỉ frontend React
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // Cho phép gửi cookie hoặc header xác thực
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả các endpoint
+        return source;
     }
 }
