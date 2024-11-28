@@ -25,7 +25,8 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/home", "/register/**").permitAll();
+                    registry.requestMatchers("/home", "/register/**", "/api/**", "/login", "/logout").permitAll();
+                    registry.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/manager/**").hasRole("MANAGER");
                     registry.anyRequest().authenticated();
@@ -38,23 +39,6 @@ public class SecurityConfiguration {
                 })
                 .build();
     }
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        UserDetails normalUser = User.builder()
-//            .username("manager")
-//            .password("$2a$12$q6L4vboqPkcy.NxJeS0Pbe0tHilrXAlydBURZ9tSP.n564yrHbxii")
-//            .roles("MANAGER")
-//            .build();
-//
-//        UserDetails adminUser = User.builder()
-//            .username("admin")
-//            .password("$2a$12$q6L4vboqPkcy.NxJeS0Pbe0tHilrXAlydBURZ9tSP.n564yrHbxii")
-//            .roles("ADMIN", "MANAGER")
-//            .build();
-//
-//        return new InMemoryUserDetailsManager(normalUser, adminUser);
-//    }
 
     @Bean
     public UserDetailsService userDetailsService() {

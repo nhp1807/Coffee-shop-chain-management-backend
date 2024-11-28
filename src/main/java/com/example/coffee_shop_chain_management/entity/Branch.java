@@ -28,11 +28,14 @@ public class Branch {
     @Column(name = "fax", nullable = false)
     String fax;
 
-    @OneToMany(mappedBy = "branch")
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Employee> employees;
 
-    @OneToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Storage> storages;
+
+    @OneToOne(mappedBy = "branch")
+    @JoinColumn(name = "account_id")
     Account account;
 
     // Getters and setters

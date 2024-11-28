@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,11 +36,17 @@ public class Employee {
     String address;
 
     @Column(name = "telegram_id")
-    Integer telegramID;
+    String chatID;
 
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     Branch branch;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ExportOrder> exportOrders;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Timesheet> timesheets;
 
     // Getters and setters
 }

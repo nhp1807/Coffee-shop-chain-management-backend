@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -27,13 +28,17 @@ public class ExportOrder {
     String paymentMethod;
 
     @Column(name = "date", nullable = false)
-    Date date;
+    LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     Employee employee;
 
-    @OneToMany(mappedBy = "exportOrder")
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    Branch branch;
+
+    @OneToMany(mappedBy = "exportOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailExportOrder> detailExportOrders;
 
     // Getters and setters

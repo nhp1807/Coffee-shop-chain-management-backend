@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -20,13 +21,13 @@ public class Timesheet {
     Long timesheetID;
 
     @Column(name = "date", nullable = false)
-    Date date;
+    LocalDateTime date;
 
     @Column(name = "shift", nullable = false)
     String shift;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employeeId",referencedColumnName = "employeeid", nullable = false)
     Employee employee;
 
     // Getters and setters

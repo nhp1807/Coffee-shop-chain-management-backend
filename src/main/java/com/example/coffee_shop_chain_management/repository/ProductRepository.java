@@ -10,5 +10,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // Truy vấn sản phẩm theo tên
     List<Product> findByNameContaining(String name);
+
+    boolean existsByName(String name);
 }
 

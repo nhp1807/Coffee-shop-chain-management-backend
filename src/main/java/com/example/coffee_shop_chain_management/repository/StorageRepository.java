@@ -9,7 +9,9 @@ import java.util.List;
 
 @Repository
 public interface StorageRepository extends JpaRepository<Storage, Long> {
-    // Truy vấn kho lưu trữ dựa trên nguyên liệu
-    List<Storage> findByMaterial(Material material);
+//    Storage findByMaterialId(Long materialId);
+
+    Storage findByMaterial_MaterialID(Long materialId);
+    Storage findByMaterial_MaterialIDAndBranch_BranchID(Long materialId, Long branchId);
 }
 
