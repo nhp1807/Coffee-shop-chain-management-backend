@@ -29,19 +29,19 @@ public class ImportOrderController {
     }
 
     @GetMapping("/get/{id}")
-    public ImportOrder getImportOrderById(@PathVariable Long id) {
+    public APIResponse<ImportOrderResponse> getImportOrderById(@PathVariable Long id) {
         return importOrderService.getImportOrderById(id);
+    }
+
+    @GetMapping("/get/un-confirmed")
+    public APIResponse<List<ImportOrderResponse>> getUnconfirmedImportOrders() {
+        return importOrderService.getImportOrderByStatus(false);
     }
 
     @PostMapping("/create")
     public APIResponse<ImportOrderResponse> createImportOrder(@RequestBody CreateImportOrderDTO importOrderDTO) {
         return importOrderService.createImportOrder(importOrderDTO);
     }
-
-//    @PutMapping("/update/{id}")
-//    public APIResponse<ImportOrderResponse> updateImportOrder(@RequestBody CreateImportOrderDTO importOrderDTO, @PathVariable Long id) {
-//        return importOrderService.updateImportOrder(id, importOrderDTO);
-//    }
 
     @PutMapping("/add/{id}")
     public APIResponse<ImportOrderResponse> addDetailImportOrder(@RequestBody DetailImportOrderDTO importOrderDTO, @PathVariable Long id) {
@@ -51,6 +51,11 @@ public class ImportOrderController {
     @DeleteMapping("/delete/{orderID}/{materialID}")
     public APIResponse<ImportOrderResponse> deleteDetailImportOrder(@PathVariable Long orderID, @PathVariable Long materialID) {
         return importOrderService.deleteDetailImportOrder(orderID, materialID);
+    }
+
+    @PostMapping("/confirm/{id}")
+    public APIResponse<ImportOrderResponse> confirmImportOrder(@PathVariable Long id) {
+        return importOrderService.confirmImportOrder(id);
     }
 
     @DeleteMapping("/delete/{id}")

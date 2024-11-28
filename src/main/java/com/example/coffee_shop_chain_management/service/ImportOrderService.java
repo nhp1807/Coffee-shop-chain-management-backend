@@ -144,8 +144,34 @@ public class ImportOrderService {
         return new APIResponse<>(importOrderResponse, "Import order created successfully", true);
     }
 
-    public ImportOrder getImportOrderById(Long id) {
-        return importOrderRepository.findById(id).orElse(null);
+    public APIResponse<ImportOrderResponse> confirmImportOrder(Long id) {
+        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
+
+        if (importOrder == null) {
+            return new APIResponse<>(null, "Import order not found", false);
+        }
+
+        importOrder.setStatus(true);
+        importOrderRepository.save(importOrder);
+
+        return new APIResponse<>(null, "Import order confirmed successfully", true);
+    }
+
+    public APIResponse<List<ImportOrderResponse>> getImportOrderByStatus(Boolean status) {
+        List<ImportOrder> importOrders = importOrderRepository.findByStatus(status);
+        List<ImportOrderResponse> importOrderResponses = new ArrayList<>();
+
+        for (ImportOrder importOrder : importOrders) {
+            importOrderResponses.add(toImportOrderRespone(importOrder));
+        }
+
+        return new APIResponse<>(importOrderResponses, "Import orders not found", false);
+    }
+
+    public APIResponse<ImportOrderResponse> getImportOrderById(Long id) {
+        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
+
+        return new APIResponse<>(toImportOrderRespone(importOrder), "Import order not found", false);
     }
 
     public APIResponse<ImportOrderResponse> addDetailImportOrder(Long id, DetailImportOrderDTO detailImportOrderDTO){
@@ -263,5 +289,17 @@ public class ImportOrderService {
 
         importOrderRepository.deleteById(id);
         return new APIResponse<>(null, "Import order deleted successfully", true);
+    }
+
+    public ImportOrderResponse toImportOrderRespone(ImportOrder importOrder){
+        ImportOrderResponse importOrderResponse = new ImportOrderResponse();
+        importOrderResponse.setImportID(importOrder.getImportID());
+        importOrderResponse.setTotal(importOrder.getTotal());
+        importOrderResponse.setPaymentMethod(importOrder.getPaymentMethod());
+        importOrderResponse.setDate(importOrder.getDate().toString());
+        importOrderResponse.setSupplierId(importOrder.getSupplier().getSupplierID());
+        importOrderResponse.setBranchId(importOrder.getBranch().getBranchID());
+
+        return importOrderResponse;
     }
 }
