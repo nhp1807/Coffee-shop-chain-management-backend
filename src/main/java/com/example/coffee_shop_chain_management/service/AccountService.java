@@ -123,7 +123,9 @@ public class AccountService {
         accountResponse.setRole(account.getRole());
         accountResponse.setChatID(account.getChatID());
         accountResponse.setEmail(account.getEmail());
-        accountResponse.setBranchID(account.getBranch().getBranchID());
+        if (account.getBranch() != null){
+            accountResponse.setBranchID(account.getBranch().getBranchID());
+        }
 
         return accountResponse;
     }

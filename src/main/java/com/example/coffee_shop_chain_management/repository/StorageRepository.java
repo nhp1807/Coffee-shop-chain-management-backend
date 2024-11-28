@@ -12,5 +12,6 @@ public interface StorageRepository extends JpaRepository<Storage, Long> {
 //    Storage findByMaterialId(Long materialId);
 
     Storage findByMaterial_MaterialID(Long materialId);
+    Storage findByMaterial_MaterialIDAndBranch_BranchID(Long materialId, Long branchId);
 }
 

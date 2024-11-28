@@ -48,6 +48,11 @@ public class ImportOrderController {
         return importOrderService.addDetailImportOrder(id, importOrderDTO);
     }
 
+    @DeleteMapping("/delete/{orderID}/{materialID}")
+    public APIResponse<ImportOrderResponse> deleteDetailImportOrder(@PathVariable Long orderID, @PathVariable Long materialID) {
+        return importOrderService.deleteDetailImportOrder(orderID, materialID);
+    }
+
     @DeleteMapping("/delete/{id}")
     public APIResponse<ImportOrderResponse> deleteImportOrder(@PathVariable Long id) {
         return importOrderService.deleteImportOrderById(id);

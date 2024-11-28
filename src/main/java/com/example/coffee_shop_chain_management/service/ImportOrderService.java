@@ -177,10 +177,11 @@ public class ImportOrderService {
                 }
 
                 newStorage.setQuantity(0d);
+
                 storageRepository.save(newStorage);
             }
         } else {
-            Storage storage = storageRepository.findByMaterial_MaterialID(material.getMaterialID());
+            Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrder.getBranch().getBranchID());
 
             if (storage != null) {
                 storage.setQuantity(storage.getQuantity() + detailImportOrderDTO.getQuantity());
@@ -224,6 +225,26 @@ public class ImportOrderService {
         }
 
         return new APIResponse<>(null, "Detail import order added successfully", true);
+    }
+
+    public APIResponse<ImportOrderResponse> deleteDetailImportOrder(Long OrderId, Long MaterialId) {
+        DetailImportOrder detailImportOrder = detailImportOrderRepository.findDetailImportOrderByImportOrder_ImportIDAndMaterial_MaterialID(OrderId, MaterialId);
+
+        if (detailImportOrder == null) {
+            return new APIResponse<>(null, "Detail import order not found", false);
+        }
+
+        ImportOrder importOrder = detailImportOrder.getImportOrder();
+        importOrder.setTotal(importOrder.getTotal() - detailImportOrder.getQuantity() * detailImportOrder.getPrice());
+
+        List<DetailImportOrder> detailImportOrders = importOrder.getDetailImportOrders();
+        detailImportOrders.remove(detailImportOrder);
+        importOrder.setDetailImportOrders(detailImportOrders);
+
+        importOrderRepository.save(importOrder);
+        detailImportOrderRepository.delete(detailImportOrder);
+
+        return new APIResponse<>(null, "Detail import order deleted successfully", true);
     }
 
     public APIResponse<ImportOrderResponse> deleteImportOrder(ImportOrder importOrder) {
