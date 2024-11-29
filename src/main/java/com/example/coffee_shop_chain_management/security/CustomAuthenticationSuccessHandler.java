@@ -18,24 +18,28 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isManager = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+        boolean isEmployee = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"));
 
         // Chuẩn bị URL chuyển hướng tùy theo vai trò
-//        Map<String, Object> responseBody = new HashMap<>();
         JSONObject responseBodyJson = new JSONObject();
         if (isAdmin) {
-//            responseBody.put("redirectUrl", "/admin/home");
             responseBodyJson.put("redirectUrl", "/admin/home");
             responseBodyJson.put("username", authentication.getName());
             responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
             responseBodyJson.put("status", "success");
         } else if (isManager) {
-//            responseBody.put("redirectUrl", "/manager/home");
             responseBodyJson.put("redirectUrl", "/manager/home");
             responseBodyJson.put("username", authentication.getName());
             responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
             responseBodyJson.put("status", "success");
+        } else if (isEmployee) {
+            responseBodyJson.put("redirectUrl", "/employee/home");
+            responseBodyJson.put("username", authentication.getName());
+            responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
+            responseBodyJson.put("status", "success");
         } else {
-//            responseBody.put("redirectUrl", "/home");
+            // Nếu không phải là admin, manager hoặc employee thì chuyển hướng về trang chủ
             responseBodyJson.put("redirectUrl", "/home");
             responseBodyJson.put("username", authentication.getName());
             responseBodyJson.put("role", authentication.getAuthorities().toArray()[0]);
@@ -44,7 +48,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Trả về phản hồi dưới dạng JSON
         response.setContentType("application/json");
-//        response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
         response.getWriter().write(responseBodyJson.toString());
         response.setStatus(HttpServletResponse.SC_OK);
     }

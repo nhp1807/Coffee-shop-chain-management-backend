@@ -1,13 +1,18 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateEmployeeDTO;
+import com.example.coffee_shop_chain_management.emails.SendOTP;
+import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.entity.Employee;
+import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.BranchRepository;
 import com.example.coffee_shop_chain_management.repository.EmployeeRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.EmployeeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +23,12 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private BranchRepository branchRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private SendOTP sendOTP;
 
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
@@ -30,14 +41,6 @@ public class EmployeeService {
         return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
     }
 
-    public APIResponse<EmployeeResponse> getEmployeeByChatID(String chatID) {
-        Employee employee = employeeRepository.findByChatID(chatID).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
-    }
-
-
     public APIResponse<EmployeeResponse> createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());
@@ -45,12 +48,25 @@ public class EmployeeService {
         employee.setPhone(employeeDTO.getPhone());
         employee.setEmail(employeeDTO.getEmail());
         employee.setAddress(employeeDTO.getAddress());
-        employee.setChatID(employeeDTO.getChatID());
+
+        Account account = new Account();
+        account.setRole("EMPLOYEE");
+        account.setEmail(employeeDTO.getEmail());
+        account.setUsername(employeeDTO.getEmail());
+        account.setPassword(passwordEncoder.encode("1234"));
+        accountRepository.save(account);
 
         Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
         employee.setBranch(branch);
+        employee.setAccount(account);
 
         Employee newEmployee = employeeRepository.save(employee);
+        StringBuilder message = new StringBuilder();
+        message.append("Your account has been created.").append("\n");
+        message.append("Username: ").append(account.getUsername()).append("\n");
+        message.append("Password is 1234").append("\n");
+
+        sendOTP.sendMail(message.toString(), account.getEmail());
 
         return new APIResponse<>(toEmployeeResponse(employeeRepository.save(newEmployee)), "Employee created successfully", true);
     }
@@ -73,9 +89,6 @@ public class EmployeeService {
         }
         if (employeeDTO.getAddress() != null) {
             employee.setAddress(employeeDTO.getAddress());
-        }
-        if (employeeDTO.getChatID() != null) {
-            employee.setChatID(employeeDTO.getChatID());
         }
         if (employeeDTO.getBranchID() != null) {
             Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
@@ -112,9 +125,7 @@ public class EmployeeService {
        employeeResponse.setPhone(employee.getPhone());
        employeeResponse.setEmail(employee.getEmail());
        employeeResponse.setAddress(employee.getAddress());
-       employeeResponse.setChatID(employee.getChatID());
        employeeResponse.setBranchID(employee.getBranch().getBranchID());
        return employeeResponse;
     }
-
 }

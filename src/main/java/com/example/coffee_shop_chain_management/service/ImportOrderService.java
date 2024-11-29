@@ -6,6 +6,7 @@ import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ImportOrderResponse;
+import com.example.coffee_shop_chain_management.telegram_bot.NotificationBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ImportOrderService {
@@ -34,6 +36,11 @@ public class ImportOrderService {
 
     @Autowired
     private BranchRepository branchRepository;
+
+    @Autowired
+    private NotificationBot notificationBot;
+    @Autowired
+    private AccountRepository accountRepository;
 
     public List<ImportOrder> getAllImportOrders() {
         return importOrderRepository.findAll();
@@ -58,7 +65,6 @@ public class ImportOrderService {
         // Tìm chi nhánh theo ID
         Branch branch = branchRepository.findById(importOrderDTO.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Chi nhánh không tồn tại"));
-
         importOrder.setBranch(branch);
 
         // Khởi tạo danh sách DetailImportOrder
@@ -92,7 +98,7 @@ public class ImportOrderService {
                 }
             } else {
                 // Nếu nguyên liệu đã tồn tại, kiểm tra kho
-                Storage storage = storageRepository.findByMaterial_MaterialID(material.getMaterialID());
+                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrderDTO.getBranchId());
 
                 if (storage != null) {
                     // Nếu Material đã tồn tại trong kho, tăng quantity
@@ -141,9 +147,27 @@ public class ImportOrderService {
         importOrderResponse.setSupplierId(newImportOrder.getSupplier().getSupplierID());
         importOrderResponse.setBranchId(newImportOrder.getBranch().getBranchID());
 
+        // Gửi thông báo tới Telegram
+        StringBuilder message = new StringBuilder();
+        message.append("New import order created\n");
+        message.append("Import ID: ").append(importOrder.getImportID()).append("\n");
+        message.append("Branch ID: ").append(importOrder.getBranch().getBranchID()).append("\n");
+        message.append("Supplier ID: ").append(importOrder.getSupplier().getSupplierID()).append("\n");
+        message.append("Total: ").append(importOrder.getTotal()).append("\n");
+
+        Optional<Account> adminAccount = accountRepository.findByRole("ADMIN");
+
+        if (adminAccount.isEmpty()) {
+            return new APIResponse<>(null, "Admin account not found", false);
+        }
+
+        String adminTelegramId = adminAccount.get().getChatID();
+        notificationBot.sendMessage(message.toString(), adminTelegramId);
+
         return new APIResponse<>(importOrderResponse, "Import order created successfully", true);
     }
 
+    @Transactional
     public APIResponse<ImportOrderResponse> confirmImportOrder(Long id) {
         ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
 
@@ -153,6 +177,22 @@ public class ImportOrderService {
 
         importOrder.setStatus(true);
         importOrderRepository.save(importOrder);
+
+        StringBuilder message = new StringBuilder();
+        message.append("Import order confirmed\n");
+        message.append("Import ID: ").append(importOrder.getImportID()).append("\n");
+        message.append("Branch ID: ").append(importOrder.getBranch().getBranchID()).append("\n");
+        message.append("Supplier ID: ").append(importOrder.getSupplier().getSupplierID()).append("\n");
+        message.append("Total: ").append(importOrder.getTotal()).append("\n");
+
+        Optional<Account> brandAccount = accountRepository.findByBranch_BranchID(importOrder.getBranch().getBranchID());
+
+        if (brandAccount.isEmpty()) {
+            return new APIResponse<>(null, "Brand account not found", false);
+        }
+
+        String brandTelegramId = brandAccount.get().getChatID();
+        notificationBot.sendMessage(message.toString(), brandTelegramId);
 
         return new APIResponse<>(null, "Import order confirmed successfully", true);
     }
@@ -174,6 +214,7 @@ public class ImportOrderService {
         return new APIResponse<>(toImportOrderRespone(importOrder), "Import order not found", false);
     }
 
+    @Transactional
     public APIResponse<ImportOrderResponse> addDetailImportOrder(Long id, DetailImportOrderDTO detailImportOrderDTO){
         ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
 
@@ -253,6 +294,7 @@ public class ImportOrderService {
         return new APIResponse<>(null, "Detail import order added successfully", true);
     }
 
+    @Transactional
     public APIResponse<ImportOrderResponse> deleteDetailImportOrder(Long OrderId, Long MaterialId) {
         DetailImportOrder detailImportOrder = detailImportOrderRepository.findDetailImportOrderByImportOrder_ImportIDAndMaterial_MaterialID(OrderId, MaterialId);
 
@@ -273,6 +315,7 @@ public class ImportOrderService {
         return new APIResponse<>(null, "Detail import order deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<ImportOrderResponse> deleteImportOrder(ImportOrder importOrder) {
         if (!importOrderRepository.existsById(importOrder.getImportID())) {
             return new APIResponse<>(null, "Import order not found", false);
@@ -282,6 +325,7 @@ public class ImportOrderService {
         return new APIResponse<>(null, "Import order deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<ImportOrderResponse> deleteImportOrderById(Long id) {
         if (!importOrderRepository.existsById(id)) {
             return new APIResponse<>(null, "Import order not found", false);

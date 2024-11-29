@@ -34,6 +34,7 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/manager/**").hasRole("MANAGER");
+                    registry.requestMatchers("/employee/**").hasRole("EMPLOYEE");
                     registry.anyRequest().authenticated();
                 })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -41,6 +42,7 @@ public class SecurityConfiguration {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
                             .successHandler(new CustomAuthenticationSuccessHandler())
+                            .failureHandler(new CustomAuthenticationFailureHandler())
                             .permitAll();
                 })
                 .logout(logout -> logout

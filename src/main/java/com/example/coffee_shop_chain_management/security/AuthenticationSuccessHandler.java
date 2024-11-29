@@ -16,11 +16,19 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isManager = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+        boolean isEmployee = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"));
 
         if(isAdmin){
             setDefaultTargetUrl("/admin/home");
-        } else {
+        } else if (isManager){
             setDefaultTargetUrl("/manager/home");
+        } else if (isEmployee){
+            setDefaultTargetUrl("/employee/home");
+        } else {
+            setDefaultTargetUrl("/home");
         }
 
         super.onAuthenticationSuccess(request, response, authentication);

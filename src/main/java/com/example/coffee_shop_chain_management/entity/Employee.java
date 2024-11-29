@@ -35,9 +35,6 @@ public class Employee {
     @Column(name = "address")
     String address;
 
-    @Column(name = "telegram_id")
-    String chatID;
-
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     Branch branch;
@@ -47,6 +44,10 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Timesheet> timesheets;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    Account account;
 
     // Getters and setters
 }

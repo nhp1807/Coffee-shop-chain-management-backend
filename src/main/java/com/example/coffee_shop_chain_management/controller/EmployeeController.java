@@ -32,11 +32,6 @@ public class EmployeeController {
         return employeeService.getEmployeeById(id);
     }
 
-    @GetMapping("/get/chatID/{chatID}")
-    public APIResponse<EmployeeResponse> getEmployeeByChatID(@PathVariable String chatID) {
-        return employeeService.getEmployeeByChatID(chatID);
-    }
-
     @PostMapping("/create")
     public APIResponse<EmployeeResponse> createEmployee(@RequestBody CreateEmployeeDTO employeeDTO) {
         return employeeService.createEmployee(employeeDTO);

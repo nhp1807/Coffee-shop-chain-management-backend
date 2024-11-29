@@ -53,6 +53,7 @@ public class NotificationBot extends TelegramLongPollingBot {
                 APIResponse<AccountResponse> accountRespone = accountService.getAccountByEmail(messageText);
                 AccountResponse account = accountRespone.getData();
 
+
                 if (account != null && account.getChatID() != null) {
                     sendMessage("This email/phone number is already verified.", chatId);
                     userCommands.remove(chatId);

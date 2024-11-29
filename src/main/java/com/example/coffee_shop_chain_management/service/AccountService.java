@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,29 +52,43 @@ public class AccountService {
     }
 
     public APIResponse<AccountResponse> getAccountById(Long id){
-        Account account = accountRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findById(id);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
     public APIResponse<AccountResponse> getAccountByUsername(String username){
-        Account account = accountRepository.findByUsername(username).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findByUsername(username);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
     public APIResponse<AccountResponse> getAccountByEmail(String email){
-        Account account = accountRepository.findByEmail(email).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findByEmail(email);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
     public APIResponse<AccountResponse> updateAccount(Long accountID, UpdateAccountDTO accountDTO){
-        Account account = accountRepository.findById(accountID).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> accountExisted = accountRepository.findById(accountID);
+
+        if (!accountExisted.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        Account account = accountExisted.get();
 
         if (accountDTO.getPassword() != null) {
             account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
