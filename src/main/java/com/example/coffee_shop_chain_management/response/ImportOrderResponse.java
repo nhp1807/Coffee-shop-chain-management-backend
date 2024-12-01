@@ -20,5 +20,5 @@ public class ImportOrderResponse {
     Long supplierId;
     Long branchId;
     Boolean status;
-    List<DetailImportOrderDTO> detailImportOrders;
+    List<DetailImportOrderResponse> detailImportOrders;
 }

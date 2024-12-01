@@ -5,6 +5,7 @@ import com.example.coffee_shop_chain_management.dto.DetailImportOrderDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.DetailImportOrderResponse;
 import com.example.coffee_shop_chain_management.response.ImportOrderResponse;
 import com.example.coffee_shop_chain_management.telegram_bot.NotificationBot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,67 +73,67 @@ public class ImportOrderService {
         // Khởi tạo danh sách DetailImportOrder
         List<DetailImportOrder> detailImportOrders = new ArrayList<>();
 
-        for (DetailImportOrderDTO detailDTO : importOrderDTO.getDetailImportOrders()) {
-            // Tìm nguyên liệu theo tên
-            Material material = materialRepository.findByName(detailDTO.getMaterialName());
-
-            if (material == null) {
-                // Nếu nguyên liệu không tồn tại, tạo mới
-                material = new Material();
-                material.setName(detailDTO.getMaterialName());
-                materialRepository.save(material); // Lưu nguyên liệu mới
-
-                // Tạo Storage mới cho nguyên liệu vừa tạo đối với tất cả các chi nhánh, nhưng chỉ tăng quantity cho chi nhánh hiện tại
-                List<Branch> branches = branchRepository.findAll();
-                for (Branch b : branches) {
-                    Storage newStorage = new Storage();
-                    newStorage.setMaterial(material);
-                    newStorage.setBranch(b);
-
-                    if (Objects.equals(b.getBranchID(), branch.getBranchID())) {
-                        newStorage.setQuantity(detailDTO.getQuantity());
-                        storageRepository.save(newStorage); // Lưu Storage mới
-                        continue;
-                    }
-
-                    newStorage.setQuantity(0d);
-                    storageRepository.save(newStorage); // Lưu Storage mới
-                }
-            } else {
-                // Nếu nguyên liệu đã tồn tại, kiểm tra kho
-                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrderDTO.getBranchId());
-
-                if (storage != null) {
-                    // Nếu Material đã tồn tại trong kho, tăng quantity
-                    storage.setQuantity(storage.getQuantity() + detailDTO.getQuantity());
-                    storageRepository.save(storage);
-                } else {
-                    // Nếu chưa có trong kho, tạo mới Storage
-                    Storage newStorage = new Storage();
-                    newStorage.setMaterial(material);
-                    newStorage.setQuantity(detailDTO.getQuantity());
-                    newStorage.setBranch(branch);
-                    storageRepository.save(newStorage); // Lưu Storage mới
-                }
-            }
-
-            // Tạo DetailImportOrder và thêm vào danh sách
-            DetailImportOrder detailImportOrder = new DetailImportOrder();
-            DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
-            detailImportOrderId.setImportOrderId(importOrder.getImportID());
-            detailImportOrderId.setMaterialId(material.getMaterialID());
-            detailImportOrder.setId(detailImportOrderId);
-
-            detailImportOrder.setMaterial(material); // Sử dụng nguyên liệu đã tìm thấy hoặc vừa tạo
-            detailImportOrder.setQuantity(detailDTO.getQuantity());
-            detailImportOrder.setImportOrder(importOrder);
-            detailImportOrder.setPrice(detailDTO.getPrice());
-            detailImportOrder.setDescription(detailDTO.getDescription());
-
-            total += detailDTO.getQuantity() * detailDTO.getPrice();
-
-            detailImportOrders.add(detailImportOrder);
-        }
+//        for (DetailImportOrderDTO detailDTO : importOrderDTO.getDetailImportOrders()) {
+//            // Tìm nguyên liệu theo tên
+//            Material material = materialRepository.findByName(detailDTO.getMaterialName());
+//
+//            if (material == null) {
+//                // Nếu nguyên liệu không tồn tại, tạo mới
+//                material = new Material();
+//                material.setName(detailDTO.getMaterialName());
+//                materialRepository.save(material); // Lưu nguyên liệu mới
+//
+//                // Tạo Storage mới cho nguyên liệu vừa tạo đối với tất cả các chi nhánh, nhưng chỉ tăng quantity cho chi nhánh hiện tại
+//                List<Branch> branches = branchRepository.findAll();
+//                for (Branch b : branches) {
+//                    Storage newStorage = new Storage();
+//                    newStorage.setMaterial(material);
+//                    newStorage.setBranch(b);
+//
+//                    if (Objects.equals(b.getBranchID(), branch.getBranchID())) {
+//                        newStorage.setQuantity(detailDTO.getQuantity());
+//                        storageRepository.save(newStorage); // Lưu Storage mới
+//                        continue;
+//                    }
+//
+//                    newStorage.setQuantity(0d);
+//                    storageRepository.save(newStorage); // Lưu Storage mới
+//                }
+//            } else {
+//                // Nếu nguyên liệu đã tồn tại, kiểm tra kho
+//                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrderDTO.getBranchId());
+//
+//                if (storage != null) {
+//                    // Nếu Material đã tồn tại trong kho, tăng quantity
+//                    storage.setQuantity(storage.getQuantity() + detailDTO.getQuantity());
+//                    storageRepository.save(storage);
+//                } else {
+//                    // Nếu chưa có trong kho, tạo mới Storage
+//                    Storage newStorage = new Storage();
+//                    newStorage.setMaterial(material);
+//                    newStorage.setQuantity(detailDTO.getQuantity());
+//                    newStorage.setBranch(branch);
+//                    storageRepository.save(newStorage); // Lưu Storage mới
+//                }
+//            }
+//
+//            // Tạo DetailImportOrder và thêm vào danh sách
+//            DetailImportOrder detailImportOrder = new DetailImportOrder();
+//            DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
+//            detailImportOrderId.setImportOrderId(importOrder.getImportID());
+//            detailImportOrderId.setMaterialId(material.getMaterialID());
+//            detailImportOrder.setId(detailImportOrderId);
+//
+//            detailImportOrder.setMaterial(material); // Sử dụng nguyên liệu đã tìm thấy hoặc vừa tạo
+//            detailImportOrder.setQuantity(detailDTO.getQuantity());
+//            detailImportOrder.setImportOrder(importOrder);
+//            detailImportOrder.setPrice(detailDTO.getPrice());
+//            detailImportOrder.setDescription(detailDTO.getDescription());
+//
+//            total += detailDTO.getQuantity() * detailDTO.getPrice();
+//
+//            detailImportOrders.add(detailImportOrder);
+//        }
 
         // Thiết lập danh sách chi tiết vào đơn nhập
         importOrder.setDetailImportOrders(detailImportOrders);
@@ -141,13 +142,6 @@ public class ImportOrderService {
         ImportOrder newImportOrder = importOrderRepository.save(importOrder);
 
         // Tạo đối tượng ImportOrderResponse để trả về
-//        ImportOrderResponse importOrderResponse = new ImportOrderResponse();
-//        importOrderResponse.setImportID(newImportOrder.getImportID());
-//        importOrderResponse.setTotal(newImportOrder.getTotal());
-//        importOrderResponse.setPaymentMethod(newImportOrder.getPaymentMethod());
-//        importOrderResponse.setDate(newImportOrder.getDate().toString());
-//        importOrderResponse.setSupplierId(newImportOrder.getSupplier().getSupplierID());
-//        importOrderResponse.setBranchId(newImportOrder.getBranch().getBranchID());
         ImportOrderResponse importOrderResponse = toImportOrderRespone(newImportOrder);
 
         // Gửi thông báo tới Telegram
@@ -307,6 +301,8 @@ public class ImportOrderService {
 
         ImportOrder importOrder = detailImportOrder.getImportOrder();
         importOrder.setTotal(importOrder.getTotal() - detailImportOrder.getQuantity() * detailImportOrder.getPrice());
+        Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(MaterialId, importOrder.getBranch().getBranchID());
+        storage.setQuantity(storage.getQuantity() - detailImportOrder.getQuantity());
 
         List<DetailImportOrder> detailImportOrders = importOrder.getDetailImportOrders();
         detailImportOrders.remove(detailImportOrder);
@@ -314,6 +310,7 @@ public class ImportOrderService {
 
         importOrderRepository.save(importOrder);
         detailImportOrderRepository.delete(detailImportOrder);
+        storageRepository.save(storage);
 
         return new APIResponse<>(null, "Detail import order deleted successfully", true);
     }
@@ -348,12 +345,13 @@ public class ImportOrderService {
         importOrderResponse.setBranchId(importOrder.getBranch().getBranchID());
         importOrderResponse.setStatus(importOrder.getStatus());
         importOrderResponse.setDetailImportOrders(importOrder.getDetailImportOrders().stream().map(detailImportOrder -> {
-            DetailImportOrderDTO detailImportOrderDTO = new DetailImportOrderDTO();
-            detailImportOrderDTO.setMaterialName(detailImportOrder.getMaterial().getName());
-            detailImportOrderDTO.setQuantity(detailImportOrder.getQuantity());
-            detailImportOrderDTO.setPrice(detailImportOrder.getPrice());
-            detailImportOrderDTO.setDescription(detailImportOrder.getDescription());
-            return detailImportOrderDTO;
+            DetailImportOrderResponse detailImportOrderResponse = new DetailImportOrderResponse();
+            detailImportOrderResponse.setMaterialId(detailImportOrder.getMaterial().getMaterialID());
+            detailImportOrderResponse.setMaterialName(detailImportOrder.getMaterial().getName());
+            detailImportOrderResponse.setQuantity(detailImportOrder.getQuantity());
+            detailImportOrderResponse.setPrice(detailImportOrder.getPrice());
+            detailImportOrderResponse.setDescription(detailImportOrder.getDescription());
+            return detailImportOrderResponse;
         }).toList());
 
         return importOrderResponse;
