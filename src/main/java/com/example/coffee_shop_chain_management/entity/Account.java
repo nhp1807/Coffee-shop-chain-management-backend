@@ -36,10 +36,6 @@ public class Account {
     @JoinColumn(name = "branch_id")
     Branch branch;
 
-    @OneToOne(mappedBy = "account")
-    @JoinColumn(name = "employee_id")
-    Employee employee;
-
     // Getters and setters
 }
 

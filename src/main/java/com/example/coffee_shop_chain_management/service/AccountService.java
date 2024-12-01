@@ -2,6 +2,7 @@ package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
+import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
@@ -25,6 +26,8 @@ public class AccountService {
     private BranchRepository branchRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SendOTP sendOTP;
 
     public APIResponse<List<AccountResponse>> getAllAccounts(){
         List<Account> accounts = accountRepository.findAll();
@@ -39,9 +42,14 @@ public class AccountService {
 
         Account account = new Account();
         account.setUsername(accountDTO.getUsername());
-        account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        account.setPassword(passwordEncoder.encode("1234"));
+        StringBuilder message = new StringBuilder();
+        message.append("Your account is ").append("\n");
+        message.append("Username: ").append(accountDTO.getUsername()).append("\n");
+        message.append("Password: ").append("1234");
+        sendOTP.sendMail(message.toString() ,accountDTO.getEmail());
         account.setEmail(accountDTO.getEmail());
-        account.setRole(accountDTO.getRole());
+        account.setRole("MANAGER");
 
         Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
         account.setBranch(branch);

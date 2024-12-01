@@ -24,7 +24,7 @@ public class ImportOrderController {
     }
 
     @GetMapping("/get/all")
-    public List<ImportOrder> getAllImportOrders() {
+    public APIResponse<List<ImportOrderResponse>> getAllImportOrders() {
         return importOrderService.getAllImportOrders();
     }
 

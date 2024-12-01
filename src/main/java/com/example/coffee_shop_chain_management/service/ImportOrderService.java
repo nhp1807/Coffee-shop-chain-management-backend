@@ -42,8 +42,10 @@ public class ImportOrderService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public List<ImportOrder> getAllImportOrders() {
-        return importOrderRepository.findAll();
+    public APIResponse<List<ImportOrderResponse>> getAllImportOrders() {
+        List<ImportOrder> importOrders = importOrderRepository.findAll();
+
+        return new APIResponse<>(importOrders.stream().map(this::toImportOrderRespone).toList(), "Import orders retrieved successfully", true);
     }
 
     @Transactional

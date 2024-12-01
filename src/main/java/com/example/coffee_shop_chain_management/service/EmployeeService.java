@@ -24,10 +24,6 @@ public class EmployeeService {
     @Autowired
     private BranchRepository branchRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
     private SendOTP sendOTP;
 
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
@@ -49,24 +45,10 @@ public class EmployeeService {
         employee.setEmail(employeeDTO.getEmail());
         employee.setAddress(employeeDTO.getAddress());
 
-        Account account = new Account();
-        account.setRole("EMPLOYEE");
-        account.setEmail(employeeDTO.getEmail());
-        account.setUsername(employeeDTO.getEmail());
-        account.setPassword(passwordEncoder.encode("1234"));
-        accountRepository.save(account);
-
         Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
         employee.setBranch(branch);
-        employee.setAccount(account);
 
         Employee newEmployee = employeeRepository.save(employee);
-        StringBuilder message = new StringBuilder();
-        message.append("Your account has been created.").append("\n");
-        message.append("Username: ").append(account.getUsername()).append("\n");
-        message.append("Password is 1234").append("\n");
-
-        sendOTP.sendMail(message.toString(), account.getEmail());
 
         return new APIResponse<>(toEmployeeResponse(employeeRepository.save(newEmployee)), "Employee created successfully", true);
     }

@@ -45,9 +45,5 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Timesheet> timesheets;
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
-    Account account;
-
     // Getters and setters
 }

@@ -4,6 +4,8 @@ import com.example.coffee_shop_chain_management.dto.CreateBranchDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateBranchDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
+import com.example.coffee_shop_chain_management.entity.Material;
+import com.example.coffee_shop_chain_management.entity.Storage;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.BranchRepository;
 
@@ -41,6 +43,14 @@ public class BranchService {
         branch.setFax(branchDTO.getFax());
 
         Branch newBranch = branchRepository.save(branch);
+
+        List<Material> materials = new ArrayList<>();
+        for (Material material : materials) {
+            Storage storage = new Storage();
+            storage.setBranch(newBranch);
+            storage.setMaterial(material);
+            storage.setQuantity(0D);
+        }
 
         return new APIResponse<>(toBranchResponse(newBranch), "Branch created successfully", true);
     }

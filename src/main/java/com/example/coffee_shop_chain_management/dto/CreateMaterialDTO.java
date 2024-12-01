@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAccountDTO {
-    String username;
-    String email;
-    Long branchID;
+public class CreateMaterialDTO {
+    String name;
 }
