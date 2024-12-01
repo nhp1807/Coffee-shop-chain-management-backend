@@ -141,13 +141,14 @@ public class ImportOrderService {
         ImportOrder newImportOrder = importOrderRepository.save(importOrder);
 
         // Tạo đối tượng ImportOrderResponse để trả về
-        ImportOrderResponse importOrderResponse = new ImportOrderResponse();
-        importOrderResponse.setImportID(newImportOrder.getImportID());
-        importOrderResponse.setTotal(newImportOrder.getTotal());
-        importOrderResponse.setPaymentMethod(newImportOrder.getPaymentMethod());
-        importOrderResponse.setDate(newImportOrder.getDate().toString());
-        importOrderResponse.setSupplierId(newImportOrder.getSupplier().getSupplierID());
-        importOrderResponse.setBranchId(newImportOrder.getBranch().getBranchID());
+//        ImportOrderResponse importOrderResponse = new ImportOrderResponse();
+//        importOrderResponse.setImportID(newImportOrder.getImportID());
+//        importOrderResponse.setTotal(newImportOrder.getTotal());
+//        importOrderResponse.setPaymentMethod(newImportOrder.getPaymentMethod());
+//        importOrderResponse.setDate(newImportOrder.getDate().toString());
+//        importOrderResponse.setSupplierId(newImportOrder.getSupplier().getSupplierID());
+//        importOrderResponse.setBranchId(newImportOrder.getBranch().getBranchID());
+        ImportOrderResponse importOrderResponse = toImportOrderRespone(newImportOrder);
 
         // Gửi thông báo tới Telegram
         StringBuilder message = new StringBuilder();
@@ -345,6 +346,15 @@ public class ImportOrderService {
         importOrderResponse.setDate(importOrder.getDate().toString());
         importOrderResponse.setSupplierId(importOrder.getSupplier().getSupplierID());
         importOrderResponse.setBranchId(importOrder.getBranch().getBranchID());
+        importOrderResponse.setStatus(importOrder.getStatus());
+        importOrderResponse.setDetailImportOrders(importOrder.getDetailImportOrders().stream().map(detailImportOrder -> {
+            DetailImportOrderDTO detailImportOrderDTO = new DetailImportOrderDTO();
+            detailImportOrderDTO.setMaterialName(detailImportOrder.getMaterial().getName());
+            detailImportOrderDTO.setQuantity(detailImportOrder.getQuantity());
+            detailImportOrderDTO.setPrice(detailImportOrder.getPrice());
+            detailImportOrderDTO.setDescription(detailImportOrder.getDescription());
+            return detailImportOrderDTO;
+        }).toList());
 
         return importOrderResponse;
     }
