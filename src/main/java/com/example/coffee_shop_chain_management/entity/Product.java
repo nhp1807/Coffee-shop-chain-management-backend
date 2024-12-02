@@ -22,13 +22,13 @@ public class Product {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     String description;
 
     @Column(name = "price", nullable = false)
     Double price;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     String image;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -221,11 +221,13 @@ public class ImportOrderService {
 
     @Transactional
     public APIResponse<ImportOrderResponse> addDetailImportOrder(Long id, DetailImportOrderDTO detailImportOrderDTO){
-        ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
+        Optional<ImportOrder> importOrderExisted = importOrderRepository.findById(id);
 
-        if (importOrder == null) {
+        if (importOrderExisted.isEmpty()) {
             return new APIResponse<>(null, "Import order not found", false);
         }
+
+        ImportOrder importOrder = importOrderExisted.get();
 
         double total = importOrder.getTotal();
 

@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
+import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
 import com.example.coffee_shop_chain_management.service.ProductService;
@@ -34,6 +35,16 @@ public class ProductController {
     @PostMapping("/create")
     public APIResponse<ProductResponse> createProduct(@RequestBody CreateProductDTO productDTO) {
         return productService.createProduct(productDTO);
+    }
+
+    @PutMapping("/add-material/{productId}")
+    public APIResponse<ProductResponse> addProductMaterial(@PathVariable Long productId, @RequestBody ProductMaterialDTO productMaterialDTO) {
+        return productService.addProductMaterial(productId, productMaterialDTO);
+    }
+
+    @DeleteMapping("/delete-material/{productId}/{materialId}")
+    public APIResponse<ProductResponse> deleteProductMaterial(@PathVariable Long productId, @PathVariable Long materialId) {
+        return productService.deleteProductMaterial(productId, materialId);
     }
 
     @PutMapping("/update/{id}")

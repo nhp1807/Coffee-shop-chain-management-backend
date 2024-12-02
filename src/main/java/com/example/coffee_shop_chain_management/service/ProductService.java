@@ -5,17 +5,21 @@ import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
 import com.example.coffee_shop_chain_management.entity.Material;
 import com.example.coffee_shop_chain_management.entity.Product;
 import com.example.coffee_shop_chain_management.entity.ProductMaterial;
+import com.example.coffee_shop_chain_management.entity.ProductMaterialId;
 import com.example.coffee_shop_chain_management.repository.MaterialRepository;
 import com.example.coffee_shop_chain_management.repository.ProductMaterialRepository;
 import com.example.coffee_shop_chain_management.repository.ProductRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.ProductMaterialResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -41,7 +45,7 @@ public class ProductService {
 
     public APIResponse<ProductResponse> createProduct(CreateProductDTO productDTO) {
         if (productRepository.existsByName(productDTO.getName())) {
-            return null;
+            return new APIResponse<>(null, "Product already exists", false);
         }
 
         Product product = new Product();
@@ -54,12 +58,19 @@ public class ProductService {
 
         if (productDTO.getProductMaterials() != null) {
             for (ProductMaterialDTO pmDTO : productDTO.getProductMaterials()) {
-                Material material = materialRepository.findById(pmDTO.getMaterialId())
-                        .orElseThrow(() -> new NotFoundException("Material not found with ID: " + pmDTO.getMaterialId()));
+                Optional<Material> material = materialRepository.findById(pmDTO.getMaterialId());
+
+                if (material.isEmpty()) {
+                    return new APIResponse<>(null, "Material not found", false);
+                }
 
                 ProductMaterial productMaterial = new ProductMaterial();
+                ProductMaterialId productMaterialId = new ProductMaterialId();
+                productMaterialId.setProductId(product.getProductID());
+                productMaterialId.setMaterialId(material.get().getMaterialID());
+                productMaterial.setId(productMaterialId);
                 productMaterial.setProduct(product);
-                productMaterial.setMaterial(material);
+                productMaterial.setMaterial(material.get());
                 productMaterial.setQuantity(pmDTO.getQuantity());
 
                 productMaterials.add(productMaterial);
@@ -67,7 +78,56 @@ public class ProductService {
         }
 
         product.setProductMaterials(productMaterials);
-        return new APIResponse<>(toProductResponse(productRepository.save(product)), "Product created successfully", true);
+        Product savedProduct = productRepository.save(product);
+        return new APIResponse<>(toProductResponse(savedProduct), "Product created successfully", true);
+    }
+
+    public APIResponse<ProductResponse> addProductMaterial(Long id, ProductMaterialDTO productMaterialDTO) {
+        Optional<Product> productExisted = productRepository.findById(id);
+
+        if (productExisted.isEmpty()) {
+            return new APIResponse<>(null, "Product not found", false);
+        }
+
+        Product product = productExisted.get();
+
+        Optional<Material> material = materialRepository.findById(productMaterialDTO.getMaterialId());
+
+        if (material.isEmpty()) {
+            return new APIResponse<>(null, "Material not found", false);
+        }
+
+        ProductMaterial productMaterial = new ProductMaterial();
+        ProductMaterialId productMaterialId = new ProductMaterialId();
+        productMaterialId.setProductId(product.getProductID());
+        productMaterialId.setMaterialId(material.get().getMaterialID());
+        productMaterial.setId(productMaterialId);
+        productMaterial.setProduct(product);
+        productMaterial.setMaterial(material.get());
+        productMaterial.setQuantity(productMaterialDTO.getQuantity());
+
+        product.getProductMaterials().add(productMaterial);
+        productRepository.save(product);
+
+        return new APIResponse<>(toProductResponse(product), "Product material added successfully", true);
+    }
+
+    public APIResponse<ProductResponse> deleteProductMaterial(Long id, Long materialId) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        Optional<ProductMaterial> productMaterial = product.getProductMaterials().stream()
+                .filter(pm -> pm.getMaterial().getMaterialID().equals(materialId))
+                .findFirst();
+
+        if (productMaterial.isEmpty()) {
+            return new APIResponse<>(null, "Product material not found", false);
+        }
+
+        product.getProductMaterials().remove(productMaterial.get());
+        productRepository.save(product);
+
+        return new APIResponse<>(toProductResponse(product), "Product material removed successfully", true);
     }
 
     public APIResponse<ProductResponse> updateProduct(Long id, CreateProductDTO productDTO) {
@@ -120,6 +180,14 @@ public class ProductService {
         productResponse.setDescription(product.getDescription());
         productResponse.setPrice(product.getPrice());
         productResponse.setImage(product.getImage());
+        productResponse.setProductMaterials(product.getProductMaterials().stream().map(productMaterial -> {
+            ProductMaterialResponse productMaterialResponse = new ProductMaterialResponse();
+            productMaterialResponse.setMaterialID(productMaterial.getMaterial().getMaterialID());
+            productMaterialResponse.setMaterialName(productMaterial.getMaterial().getName());
+            productMaterialResponse.setProductID(productMaterial.getProduct().getProductID());
+            productMaterialResponse.setQuantity(productMaterial.getQuantity());
+            return productMaterialResponse;
+        }).toList());
 
         return productResponse;
     }
