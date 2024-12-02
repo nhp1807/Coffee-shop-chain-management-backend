@@ -64,6 +64,26 @@ public class TimesheetService {
         return new APIResponse<>(toTimesheetResponse(timesheet.get()), "Timesheet retrieved successfully", true);
     }
 
+    public APIResponse<List<TimesheetResponse>> getTimesheetByBranchId(Long branchId) {
+        List<Timesheet> timesheets = timesheetRepository.findByEmployee_Branch_BranchID(branchId);
+
+        if (timesheets.isEmpty()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheet retrieved successfully", true);
+    }
+
+    public APIResponse<List<TimesheetResponse>> getTimesheetsByEmployeeId(Long employeeId) {
+        List<Timesheet> timesheets = timesheetRepository.findByEmployee_EmployeeID(employeeId);
+
+        if (timesheets.isEmpty()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheet retrieved successfully", true);
+    }
+
     public APIResponse<TimesheetResponse> updateTimesheet(Long timesheetId, UpdateTimesheetDTO timesheetDTO) {
         Optional<Timesheet> timesheetExisted = timesheetRepository.findById(timesheetId);
 
@@ -107,6 +127,7 @@ public class TimesheetService {
         timesheetResponse.setDate(timesheet.getDate());
         timesheetResponse.setShift(timesheet.getShift());
         timesheetResponse.setEmployeeId(timesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setBranchId(timesheet.getEmployee().getBranch().getBranchID());
         return timesheetResponse;
     }
 }

@@ -33,6 +33,16 @@ public class TimesheetController {
         return timesheetService.getTimesheetById(id);
     }
 
+    @GetMapping("/get/employee/{employeeId}")
+    public APIResponse<List<TimesheetResponse>> getTimesheetsByEmployeeId(@PathVariable Long employeeId) {
+        return timesheetService.getTimesheetsByEmployeeId(employeeId);
+    }
+
+    @GetMapping("/get/branch/{branchId}")
+    public APIResponse<List<TimesheetResponse>> getTimesheetsByBranchId(@PathVariable Long branchId) {
+        return timesheetService.getTimesheetByBranchId(branchId);
+    }
+
     @PostMapping("/create")
     public APIResponse<TimesheetResponse> createTimesheet(@RequestBody CreateTimesheetDTO timesheetDTO) {
         return timesheetService.createTimesheet(timesheetDTO);

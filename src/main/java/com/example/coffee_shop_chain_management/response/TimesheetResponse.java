@@ -15,4 +15,5 @@ public class TimesheetResponse {
     Long employeeId;
     LocalDateTime date;
     String shift;
+    Long BranchId;
 }

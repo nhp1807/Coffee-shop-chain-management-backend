@@ -61,14 +61,22 @@ public class ImportOrderService {
         double total = 0d;
 
         // Tìm nhà cung cấp theo ID
-        Supplier supplier = supplierRepository.findById(importOrderDTO.getSupplierId())
-                .orElseThrow(() -> new RuntimeException("Nhà cung cấp không tồn tại"));
-        importOrder.setSupplier(supplier);
+        Optional<Supplier> supplier = supplierRepository.findById(importOrderDTO.getSupplierID());
+
+        if (supplier.isEmpty()) {
+            return new APIResponse<>(null, "Supplier not found", false);
+        }
+
+        importOrder.setSupplier(supplier.get());
 
         // Tìm chi nhánh theo ID
-        Branch branch = branchRepository.findById(importOrderDTO.getBranchId())
-                .orElseThrow(() -> new RuntimeException("Chi nhánh không tồn tại"));
-        importOrder.setBranch(branch);
+        Optional<Branch> branch = branchRepository.findById(importOrderDTO.getBranchID());
+
+        if (branch.isEmpty()) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        importOrder.setBranch(branch.get());
 
         // Khởi tạo danh sách DetailImportOrder
         List<DetailImportOrder> detailImportOrders = new ArrayList<>();
@@ -341,8 +349,8 @@ public class ImportOrderService {
         importOrderResponse.setTotal(importOrder.getTotal());
         importOrderResponse.setPaymentMethod(importOrder.getPaymentMethod());
         importOrderResponse.setDate(importOrder.getDate().toString());
-        importOrderResponse.setSupplierId(importOrder.getSupplier().getSupplierID());
-        importOrderResponse.setBranchId(importOrder.getBranch().getBranchID());
+        importOrderResponse.setSupplierID(importOrder.getSupplier().getSupplierID());
+        importOrderResponse.setBranchID(importOrder.getBranch().getBranchID());
         importOrderResponse.setStatus(importOrder.getStatus());
         importOrderResponse.setDetailImportOrders(importOrder.getDetailImportOrders().stream().map(detailImportOrder -> {
             DetailImportOrderResponse detailImportOrderResponse = new DetailImportOrderResponse();

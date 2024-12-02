@@ -17,8 +17,8 @@ public class ImportOrderResponse {
     Double total;
     String paymentMethod;
     String date;
-    Long supplierId;
-    Long branchId;
+    Long supplierID;
+    Long branchID;
     Boolean status;
     List<DetailImportOrderResponse> detailImportOrders;
 }
