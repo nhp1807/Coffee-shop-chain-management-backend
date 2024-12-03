@@ -24,6 +24,10 @@ import java.util.List;
 public class SecurityConfiguration {
     @Autowired
     private AccountDetailService accountDetailService;
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -41,8 +45,8 @@ public class SecurityConfiguration {
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
-                            .successHandler(new CustomAuthenticationSuccessHandler())
-                            .failureHandler(new CustomAuthenticationFailureHandler())
+                            .successHandler(customAuthenticationSuccessHandler)
+                            .failureHandler(customAuthenticationFailureHandler)
                             .permitAll();
                 })
                 .logout(logout -> logout

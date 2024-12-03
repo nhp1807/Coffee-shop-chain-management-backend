@@ -37,6 +37,11 @@ public class EmployeeService {
         return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
     }
 
+    public APIResponse<List<EmployeeResponse>> getEmployeeByBranchId(Long branchId) {
+        List<Employee> employees = employeeRepository.findByBranch_BranchID(branchId);
+        return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);
+    }
+
     public APIResponse<EmployeeResponse> createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());

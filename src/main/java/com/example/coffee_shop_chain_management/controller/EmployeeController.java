@@ -32,6 +32,11 @@ public class EmployeeController {
         return employeeService.getEmployeeById(id);
     }
 
+    @GetMapping("/get/branch/{branchId}")
+    public APIResponse<List<EmployeeResponse>> getEmployeesByBranchId(@PathVariable Long branchId) {
+        return employeeService.getEmployeeByBranchId(branchId);
+    }
+
     @PostMapping("/create")
     public APIResponse<EmployeeResponse> createEmployee(@RequestBody CreateEmployeeDTO employeeDTO) {
         return employeeService.createEmployee(employeeDTO);
