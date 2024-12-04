@@ -37,6 +37,20 @@ public class EmployeeService {
         return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
     }
 
+    public APIResponse<EmployeeResponse> updateEmployeeChatId(Long employeeId, String chatId) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setChatID(chatId);
+
+        employeeRepository.save(employee);
+        return new APIResponse<>(toEmployeeResponse(employee), "Employee chatID updated successfully", true);
+    }
+
+    public APIResponse<EmployeeResponse> getEmployeeByEmail(String email) {
+        Employee employee = employeeRepository.findByEmail(email).
+                orElseThrow(() -> new RuntimeException("Employee not found"));
+        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
+    }
+
     public APIResponse<List<EmployeeResponse>> getEmployeeByBranchId(Long branchId) {
         List<Employee> employees = employeeRepository.findByBranch_BranchID(branchId);
         return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);

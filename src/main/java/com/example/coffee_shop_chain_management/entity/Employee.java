@@ -35,6 +35,9 @@ public class Employee {
     @Column(name = "address")
     String address;
 
+    @Column(name = "chatID")
+    String chatID;
+
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     Branch branch;
