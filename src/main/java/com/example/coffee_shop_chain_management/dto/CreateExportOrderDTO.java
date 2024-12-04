@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,9 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateExportOrderDTO {
-    Double total;
     String paymentMethod;
-    LocalDateTime date;
     Long employeeID;
     Long branchID;
+    List<DetailExportOrderDTO> detailExportOrders;
 }
