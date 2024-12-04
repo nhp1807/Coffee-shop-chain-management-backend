@@ -13,5 +13,6 @@ public interface ImportOrderRepository extends JpaRepository<ImportOrder, Long> 
     // Truy vấn đơn hàng nhập theo nhà cung cấp
     List<ImportOrder> findBySupplier(Supplier supplier);
     List<ImportOrder> findByStatus(Boolean status);
+    List<ImportOrder> findByBranch_BranchID(Long branchID);
 }
 

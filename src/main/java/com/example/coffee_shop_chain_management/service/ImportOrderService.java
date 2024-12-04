@@ -49,6 +49,12 @@ public class ImportOrderService {
         return new APIResponse<>(importOrders.stream().map(this::toImportOrderRespone).toList(), "Import orders retrieved successfully", true);
     }
 
+    public APIResponse<List<ImportOrderResponse>> getImportOrderByBranchId(Long branchId) {
+        List<ImportOrder> importOrders = importOrderRepository.findByBranch_BranchID(branchId);
+
+        return new APIResponse<>(importOrders.stream().map(this::toImportOrderRespone).toList(), "Import orders retrieved successfully", true);
+    }
+
     @Transactional
     public APIResponse<ImportOrderResponse> createImportOrder(CreateImportOrderDTO importOrderDTO) {
         // Tạo đối tượng ImportOrder mới
