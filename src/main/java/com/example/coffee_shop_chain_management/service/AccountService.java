@@ -13,6 +13,7 @@ import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +36,10 @@ public class AccountService {
         return new APIResponse<>(accounts.stream().map(this::toAccountResponse).toList(), "Accounts retrieved successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> createAccount(CreateAccountDTO accountDTO){
         if(accountRepository.existsByUsername(accountDTO.getUsername())){
-            throw new RuntimeException("Username is already taken!");
+            return new APIResponse<>(null, "Account already exists!", false);
         }
 
         Account account = new Account();
@@ -89,6 +91,7 @@ public class AccountService {
         return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> updateAccount(Long accountID, UpdateAccountDTO accountDTO){
         Optional<Account> accountExisted = accountRepository.findById(accountID);
 
@@ -120,6 +123,7 @@ public class AccountService {
         return new APIResponse<>(toAccountResponse(account), "Account updated successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> deleteAccount(Account account){
         if (!accountRepository.existsById(account.getAccountID())) {
             return new APIResponse<>(null, "Account not found!", false);
@@ -129,6 +133,7 @@ public class AccountService {
         return new APIResponse<>(null, "Account deleted successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> deleteAccountById(Long id){
         if (!accountRepository.existsById(id)) {
             return new APIResponse<>(null, "Account not found!", false);

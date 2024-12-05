@@ -15,6 +15,7 @@ import com.example.coffee_shop_chain_management.response.ProductResponse;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class ProductService {
         return new APIResponse<>(toProductResponse(product), "Product retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<ProductResponse> createProduct(CreateProductDTO productDTO) {
         if (productRepository.existsByName(productDTO.getName())) {
             return new APIResponse<>(null, "Product already exists", false);
@@ -82,6 +84,7 @@ public class ProductService {
         return new APIResponse<>(toProductResponse(savedProduct), "Product created successfully", true);
     }
 
+    @Transactional
     public APIResponse<ProductResponse> addProductMaterial(Long id, ProductMaterialDTO productMaterialDTO) {
         Optional<Product> productExisted = productRepository.findById(id);
 
@@ -112,9 +115,15 @@ public class ProductService {
         return new APIResponse<>(toProductResponse(product), "Product material added successfully", true);
     }
 
+    @Transactional
     public APIResponse<ProductResponse> deleteProductMaterial(Long id, Long materialId) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        Optional<Product> productExisted = productRepository.findById(id);
+
+        if (productExisted.isEmpty()) {
+            return new APIResponse<>(null, "Product not found", false);
+        }
+
+        Product product = productExisted.get();
 
         Optional<ProductMaterial> productMaterial = product.getProductMaterials().stream()
                 .filter(pm -> pm.getMaterial().getMaterialID().equals(materialId))
@@ -130,9 +139,15 @@ public class ProductService {
         return new APIResponse<>(toProductResponse(product), "Product material removed successfully", true);
     }
 
+    @Transactional
     public APIResponse<ProductResponse> updateProduct(Long id, CreateProductDTO productDTO) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        Optional<Product> productExisted = productRepository.findById(id);
+
+        if (productExisted.isEmpty()) {
+            return new APIResponse<>(null, "Product not found", false);
+        }
+
+        Product product = productExisted.get();
 
         if (productDTO.getName() != null) {
             product.setName(productDTO.getName());
@@ -154,6 +169,7 @@ public class ProductService {
         return new APIResponse<>(toProductResponse(productRepository.save(product)), "Product updated successfully", true);
     }
 
+    @Transactional
     public APIResponse<ProductResponse> deleteProduct(Product product) {
         if (!productRepository.existsById(product.getProductID())) {
             return new APIResponse<>(null, "Product not found", false);
@@ -164,6 +180,7 @@ public class ProductService {
 
     }
 
+    @Transactional
     public APIResponse<ProductResponse> deleteProductById(Long id) {
         if (!productRepository.existsById(id)) {
             return new APIResponse<>(null, "Product not found", false);

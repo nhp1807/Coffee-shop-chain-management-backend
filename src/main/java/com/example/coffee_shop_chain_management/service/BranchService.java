@@ -13,10 +13,12 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class BranchService {
@@ -32,6 +34,7 @@ public class BranchService {
         return new APIResponse<>(branches.stream().map(this::toBranchResponse).toList(), "Branches retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<BranchResponse> createBranch(CreateBranchDTO branchDTO) {
         if (branchRepository.existsByAddress(branchDTO.getAddress())) {
             return new APIResponse<>(null, "Branch already exists", false);
@@ -56,15 +59,24 @@ public class BranchService {
     }
 
     public APIResponse<BranchResponse> getBranchById(Long id) {
-        Branch branch = branchRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Branch not found!"));
+        Optional<Branch> branchExisted = branchRepository.findById(id);
 
-        return new APIResponse<>(toBranchResponse(branch), "Branch retrieved successfully", true);
+        if (!branchExisted.isPresent()) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        return new APIResponse<>(toBranchResponse(branchExisted.get()), "Branch retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<BranchResponse> updateBranch(Long id, UpdateBranchDTO branchDTO) {
-        Branch branch = branchRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Branch not found!"));
+        Optional<Branch> branchExisted = branchRepository.findById(id);
+
+        if (!branchExisted.isPresent()) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        Branch branch = branchExisted.get();
 
         if (branchDTO.getAddress() != null) {
             branch.setAddress(branchDTO.getAddress());
@@ -83,6 +95,7 @@ public class BranchService {
         return new APIResponse<>(toBranchResponse(branch), "Branch updated successfully", true);
     }
 
+    @Transactional
     public APIResponse<BranchResponse> deleteBranch(Branch branch) {
         if (!branchRepository.existsById(branch.getBranchID())) {
             return new APIResponse<>(null, "Branch not found", false);
@@ -92,6 +105,7 @@ public class BranchService {
         return new APIResponse<>(null, "Branch deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<BranchResponse> deleteBranchById(Long id) {
         if (!branchRepository.existsById(id)) {
             return new APIResponse<>(null, "Branch not found", false);

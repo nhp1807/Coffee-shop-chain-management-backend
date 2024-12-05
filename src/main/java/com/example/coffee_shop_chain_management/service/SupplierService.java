@@ -8,8 +8,10 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.SupplierResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SupplierService {
@@ -22,6 +24,7 @@ public class SupplierService {
         return new APIResponse<>(suppliers.stream().map(this::toSupplierResponse).toList(), "Suppliers retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<SupplierResponse> createSupplier(CreateSupplierDTO supplierDTO) {
         if (supplierRepository.existsByName(supplierDTO.getName())) {
             return new APIResponse<>(null, "Supplier already exists", false);
@@ -38,21 +41,26 @@ public class SupplierService {
     }
 
     public APIResponse<SupplierResponse> getSupplierById(Long id) {
-        Supplier supplier = supplierRepository.findById(id).orElse(null);
+        Optional<Supplier> supplierExisted = supplierRepository.findById(id);
 
-        if (supplier == null) {
+        if (supplierExisted.isEmpty()) {
             return new APIResponse<>(null, "Supplier not found", false);
         }
+
+        Supplier supplier = supplierExisted.get();
 
         return new APIResponse<>(toSupplierResponse(supplier), "Supplier retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<SupplierResponse> updateSupplier(Long id, UpdateSupplierDTO supplierDTO) {
-        Supplier supplier = supplierRepository.findById(id).orElse(null);
+        Optional<Supplier> supplierExisted = supplierRepository.findById(id);
 
-        if (supplier == null) {
+        if (supplierExisted.isEmpty()) {
             return new APIResponse<>(null, "Supplier not found", false);
         }
+
+        Supplier supplier = supplierExisted.get();
 
         if (supplierDTO.getName() != null) {
             supplier.setName(supplierDTO.getName());
@@ -71,6 +79,7 @@ public class SupplierService {
         return new APIResponse<>(toSupplierResponse(supplier), "Supplier updated successfully", true);
     }
 
+    @Transactional
     public APIResponse<SupplierResponse> deleteSupplier(Supplier supplier) {
         if(supplierRepository.existsById(supplier.getSupplierID())){
             return new APIResponse<>(null, "Supplier not found", false);
@@ -80,6 +89,7 @@ public class SupplierService {
         return new APIResponse<>(null, "Supplier deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<SupplierResponse> deleteSupplierById(Long id) {
         if (!supplierRepository.existsById(id)) {
             return new APIResponse<>(null, "Supplier not found", false);

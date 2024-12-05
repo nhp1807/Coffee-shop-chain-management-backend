@@ -6,6 +6,7 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.StorageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +23,10 @@ public class StorageService {
         return new APIResponse<>(storages.stream().map(this::toStorageResponse).collect(Collectors.toList()), "Storages retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<StorageResponse> createStorage(Storage storage) {
 
-        return new APIResponse<>(toStorageResponse(storageRepository.save(storage)), "SUCCESS", true);
+        return new APIResponse<>(toStorageResponse(storageRepository.save(storage)), "Storage created successfully", true);
     }
 
     public APIResponse<StorageResponse> getStorageById(Long id) {
