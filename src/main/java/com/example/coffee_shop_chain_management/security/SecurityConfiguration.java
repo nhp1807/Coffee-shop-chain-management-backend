@@ -77,8 +77,8 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Địa chỉ frontend React
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://nhp1807.github.io")); // Địa chỉ frontend React
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // Thêm PATCH nếu cần
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // Cho phép gửi cookie hoặc header xác thực
 
