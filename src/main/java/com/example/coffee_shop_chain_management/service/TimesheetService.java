@@ -34,7 +34,7 @@ public class TimesheetService {
         timesheet.setShift(timesheetDTO.getShift());
 
         // Tìm employee theo id
-        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeId()).orElse(null);
+        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeID()).orElse(null);
         if (employee == null) {
             return new APIResponse<>(null, "Employee not found", false);
         }
@@ -49,7 +49,7 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(newTimesheet.getTimesheetID());
         timesheetResponse.setDate(newTimesheet.getDate());
         timesheetResponse.setShift(newTimesheet.getShift());
-        timesheetResponse.setEmployeeId(newTimesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setEmployeeID(newTimesheet.getEmployee().getEmployeeID());
 
         return new APIResponse<>(timesheetResponse, "Timesheet created successfully", true);
     }
@@ -126,8 +126,8 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(timesheet.getTimesheetID());
         timesheetResponse.setDate(timesheet.getDate());
         timesheetResponse.setShift(timesheet.getShift());
-        timesheetResponse.setEmployeeId(timesheet.getEmployee().getEmployeeID());
-        timesheetResponse.setBranchId(timesheet.getEmployee().getBranch().getBranchID());
+        timesheetResponse.setEmployeeID(timesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setBranchID(timesheet.getEmployee().getBranch().getBranchID());
         return timesheetResponse;
     }
 }

@@ -9,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetailImportOrderResponse {
-    Long materialId;
-    String materialName;
+    Long materialID;
+    String name;
     Double quantity;
     Double price;
     String description;

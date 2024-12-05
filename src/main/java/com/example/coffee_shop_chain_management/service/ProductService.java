@@ -60,7 +60,7 @@ public class ProductService {
 
         if (productDTO.getProductMaterials() != null) {
             for (ProductMaterialDTO pmDTO : productDTO.getProductMaterials()) {
-                Optional<Material> material = materialRepository.findById(pmDTO.getMaterialId());
+                Optional<Material> material = materialRepository.findById(pmDTO.getMaterialID());
 
                 if (material.isEmpty()) {
                     return new APIResponse<>(null, "Material not found", false);
@@ -94,7 +94,7 @@ public class ProductService {
 
         Product product = productExisted.get();
 
-        Optional<Material> material = materialRepository.findById(productMaterialDTO.getMaterialId());
+        Optional<Material> material = materialRepository.findById(productMaterialDTO.getMaterialID());
 
         if (material.isEmpty()) {
             return new APIResponse<>(null, "Material not found", false);
