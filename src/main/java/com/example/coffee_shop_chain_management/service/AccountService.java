@@ -2,6 +2,7 @@ package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateAccountDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
+import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
@@ -12,8 +13,10 @@ import com.example.coffee_shop_chain_management.response.BranchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +27,8 @@ public class AccountService {
     private BranchRepository branchRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SendOTP sendOTP;
 
     public APIResponse<List<AccountResponse>> getAllAccounts(){
         List<Account> accounts = accountRepository.findAll();
@@ -31,16 +36,22 @@ public class AccountService {
         return new APIResponse<>(accounts.stream().map(this::toAccountResponse).toList(), "Accounts retrieved successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> createAccount(CreateAccountDTO accountDTO){
         if(accountRepository.existsByUsername(accountDTO.getUsername())){
-            throw new RuntimeException("Username is already taken!");
+            return new APIResponse<>(null, "Account already exists!", false);
         }
 
         Account account = new Account();
         account.setUsername(accountDTO.getUsername());
-        account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        account.setPassword(passwordEncoder.encode("1234"));
+        StringBuilder message = new StringBuilder();
+        message.append("Your account is ").append("\n");
+        message.append("Username: ").append(accountDTO.getUsername()).append("\n");
+        message.append("Password: ").append("1234");
+        sendOTP.sendMail(message.toString() ,accountDTO.getEmail());
         account.setEmail(accountDTO.getEmail());
-        account.setRole(accountDTO.getRole());
+        account.setRole("MANAGER");
 
         Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
         account.setBranch(branch);
@@ -51,29 +62,44 @@ public class AccountService {
     }
 
     public APIResponse<AccountResponse> getAccountById(Long id){
-        Account account = accountRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findById(id);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
     public APIResponse<AccountResponse> getAccountByUsername(String username){
-        Account account = accountRepository.findByUsername(username).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findByUsername(username);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
     public APIResponse<AccountResponse> getAccountByEmail(String email){
-        Account account = accountRepository.findByEmail(email).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> account = accountRepository.findByEmail(email);
 
-        return new APIResponse<>(toAccountResponse(account), "Account retrieved successfully!", true);
+        if (!account.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        return new APIResponse<>(toAccountResponse(account.get()), "Account retrieved successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> updateAccount(Long accountID, UpdateAccountDTO accountDTO){
-        Account account = accountRepository.findById(accountID).
-                orElseThrow(() -> new RuntimeException("Account not found!"));
+        Optional<Account> accountExisted = accountRepository.findById(accountID);
+
+        if (!accountExisted.isPresent()) {
+            return new APIResponse<>(null, "Account not found!", false);
+        }
+
+        Account account = accountExisted.get();
 
         if (accountDTO.getPassword() != null) {
             account.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
@@ -97,6 +123,7 @@ public class AccountService {
         return new APIResponse<>(toAccountResponse(account), "Account updated successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> deleteAccount(Account account){
         if (!accountRepository.existsById(account.getAccountID())) {
             return new APIResponse<>(null, "Account not found!", false);
@@ -106,6 +133,7 @@ public class AccountService {
         return new APIResponse<>(null, "Account deleted successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> deleteAccountById(Long id){
         if (!accountRepository.existsById(id)) {
             return new APIResponse<>(null, "Account not found!", false);

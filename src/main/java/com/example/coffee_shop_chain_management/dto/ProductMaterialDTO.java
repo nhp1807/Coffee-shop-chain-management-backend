@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductMaterialDTO {
-    Long materialId;
+    Long materialID;
     Integer quantity;
 }

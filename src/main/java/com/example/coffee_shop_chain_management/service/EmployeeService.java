@@ -1,16 +1,23 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateEmployeeDTO;
+import com.example.coffee_shop_chain_management.emails.SendOTP;
+import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.entity.Employee;
+import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.BranchRepository;
 import com.example.coffee_shop_chain_management.repository.EmployeeRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.EmployeeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -18,26 +25,58 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private BranchRepository branchRepository;
+    @Autowired
+    private SendOTP sendOTP;
 
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
+
         return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);
     }
 
     public APIResponse<EmployeeResponse> getEmployeeById(Long id) {
-        Employee employee = employeeRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
-        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
+        Optional<Employee> employeeExisted = employeeRepository.findById(id);
+
+        if(!employeeExisted.isPresent()){
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+
+        return new APIResponse<>(toEmployeeResponse(employeeExisted.get()), "Employee retrieved successfully", true);
     }
 
-    public APIResponse<EmployeeResponse> getEmployeeByChatID(String chatID) {
-        Employee employee = employeeRepository.findByChatID(chatID).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
+    @Transactional
+    public APIResponse<EmployeeResponse> updateEmployeeChatId(Long employeeId, String chatId) {
+        Optional<Employee> employeeExisted = employeeRepository.findById(employeeId);
 
-        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
+        if(!employeeExisted.isPresent()){
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+
+        Employee employee = employeeExisted.get();
+
+        employee.setChatID(chatId);
+
+        employeeRepository.save(employee);
+        return new APIResponse<>(toEmployeeResponse(employee), "Employee chatID updated successfully", true);
     }
 
+    public APIResponse<EmployeeResponse> getEmployeeByEmail(String email) {
+        Optional<Employee> employeeExisted = employeeRepository.findByEmail(email);
 
+        if(!employeeExisted.isPresent()){
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+
+        return new APIResponse<>(toEmployeeResponse(employeeExisted.get()), "Employee retrieved successfully", true);
+    }
+
+    public APIResponse<List<EmployeeResponse>> getEmployeeByBranchId(Long branchId) {
+        List<Employee> employees = employeeRepository.findByBranch_BranchID(branchId);
+
+        return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);
+    }
+
+    @Transactional
     public APIResponse<EmployeeResponse> createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());
@@ -45,7 +84,6 @@ public class EmployeeService {
         employee.setPhone(employeeDTO.getPhone());
         employee.setEmail(employeeDTO.getEmail());
         employee.setAddress(employeeDTO.getAddress());
-        employee.setChatID(employeeDTO.getChatID());
 
         Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
         employee.setBranch(branch);
@@ -55,6 +93,7 @@ public class EmployeeService {
         return new APIResponse<>(toEmployeeResponse(employeeRepository.save(newEmployee)), "Employee created successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {
         Employee employee = employeeRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -74,9 +113,6 @@ public class EmployeeService {
         if (employeeDTO.getAddress() != null) {
             employee.setAddress(employeeDTO.getAddress());
         }
-        if (employeeDTO.getChatID() != null) {
-            employee.setChatID(employeeDTO.getChatID());
-        }
         if (employeeDTO.getBranchID() != null) {
             Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
             employee.setBranch(branch);
@@ -87,6 +123,7 @@ public class EmployeeService {
 
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> deleteEmployee(Employee employee) {
         if (!employeeRepository.existsById(employee.getEmployeeID())) {
             return new APIResponse<>(null, "Employee not found", false);
@@ -95,6 +132,7 @@ public class EmployeeService {
         return new APIResponse<>(null, "Employee deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> deleteEmployeeById(Long id) {
         if (!employeeRepository.existsById(id)) {
             return new APIResponse<>(null, "Employee not found", false);
@@ -112,9 +150,7 @@ public class EmployeeService {
        employeeResponse.setPhone(employee.getPhone());
        employeeResponse.setEmail(employee.getEmail());
        employeeResponse.setAddress(employee.getAddress());
-       employeeResponse.setChatID(employee.getChatID());
        employeeResponse.setBranchID(employee.getBranch().getBranchID());
        return employeeResponse;
     }
-
 }

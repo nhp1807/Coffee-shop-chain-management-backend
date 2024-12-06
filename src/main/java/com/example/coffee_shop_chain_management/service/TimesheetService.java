@@ -11,7 +11,9 @@ import com.example.coffee_shop_chain_management.response.TimesheetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -27,22 +29,15 @@ public class TimesheetService {
     }
 
     public APIResponse<TimesheetResponse> createTimesheet(CreateTimesheetDTO timesheetDTO) {
-
-        if (timesheetRepository.existsByDate(timesheetDTO.getDate())) {
-            return new APIResponse<>(null, "Timesheet already exists", false);
-        }
-
-
         Timesheet timesheet = new Timesheet();
-        timesheet.setDate(timesheetDTO.getDate());
+        timesheet.setDate(LocalDateTime.now());
         timesheet.setShift(timesheetDTO.getShift());
 
         // Tìm employee theo id
-        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeId()).orElse(null);
+        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeID()).orElse(null);
         if (employee == null) {
             return new APIResponse<>(null, "Employee not found", false);
         }
-
 
         timesheet.setEmployee(employee);
 
@@ -54,22 +49,49 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(newTimesheet.getTimesheetID());
         timesheetResponse.setDate(newTimesheet.getDate());
         timesheetResponse.setShift(newTimesheet.getShift());
-        timesheetResponse.setEmployeeId(newTimesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setEmployeeID(newTimesheet.getEmployee().getEmployeeID());
 
         return new APIResponse<>(timesheetResponse, "Timesheet created successfully", true);
-
     }
 
     public APIResponse<TimesheetResponse> getTimesheetById(Long id) {
-        Timesheet timesheet = timesheetRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Timesheet not found!"));
+        Optional<Timesheet> timesheet = timesheetRepository.findById(id);
 
-        return new APIResponse<>(toTimesheetResponse(timesheet), "Timesheet retrieved successfully", true);
+        if (!timesheet.isPresent()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        return new APIResponse<>(toTimesheetResponse(timesheet.get()), "Timesheet retrieved successfully", true);
+    }
+
+    public APIResponse<List<TimesheetResponse>> getTimesheetByBranchId(Long branchId) {
+        List<Timesheet> timesheets = timesheetRepository.findByEmployee_Branch_BranchID(branchId);
+
+        if (timesheets.isEmpty()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheet retrieved successfully", true);
+    }
+
+    public APIResponse<List<TimesheetResponse>> getTimesheetsByEmployeeId(Long employeeId) {
+        List<Timesheet> timesheets = timesheetRepository.findByEmployee_EmployeeID(employeeId);
+
+        if (timesheets.isEmpty()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheet retrieved successfully", true);
     }
 
     public APIResponse<TimesheetResponse> updateTimesheet(Long timesheetId, UpdateTimesheetDTO timesheetDTO) {
-        Timesheet timesheet = timesheetRepository.findById(timesheetId)
-                .orElseThrow(() -> new RuntimeException("Timesheet not found!"));
+        Optional<Timesheet> timesheetExisted = timesheetRepository.findById(timesheetId);
+
+        if (!timesheetExisted.isPresent()) {
+            return new APIResponse<>(null, "Timesheet not found", false);
+        }
+
+        Timesheet timesheet = timesheetExisted.get();
 
         if (timesheetDTO.getDate() != null) {
             timesheet.setDate(timesheetDTO.getDate());
@@ -104,7 +126,8 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(timesheet.getTimesheetID());
         timesheetResponse.setDate(timesheet.getDate());
         timesheetResponse.setShift(timesheet.getShift());
-        timesheetResponse.setEmployeeId(timesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setEmployeeID(timesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setBranchID(timesheet.getEmployee().getBranch().getBranchID());
         return timesheetResponse;
     }
 }

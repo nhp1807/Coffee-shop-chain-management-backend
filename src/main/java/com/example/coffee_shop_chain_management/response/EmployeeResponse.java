@@ -19,5 +19,4 @@ public class EmployeeResponse {
     String address;
     String chatID;
     Long branchID;
-
 }

@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateAccountDTO {
     String username;
-    String password;
-    String role;
     String email;
     Long branchID;
 }

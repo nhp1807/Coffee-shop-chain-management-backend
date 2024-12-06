@@ -32,9 +32,9 @@ public class EmployeeController {
         return employeeService.getEmployeeById(id);
     }
 
-    @GetMapping("/get/chatID/{chatID}")
-    public APIResponse<EmployeeResponse> getEmployeeByChatID(@PathVariable String chatID) {
-        return employeeService.getEmployeeByChatID(chatID);
+    @GetMapping("/get/branch/{branchId}")
+    public APIResponse<List<EmployeeResponse>> getEmployeesByBranchId(@PathVariable Long branchId) {
+        return employeeService.getEmployeeByBranchId(branchId);
     }
 
     @PostMapping("/create")

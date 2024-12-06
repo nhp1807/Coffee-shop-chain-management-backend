@@ -13,12 +13,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Autowired
     private AccountDetailService accountDetailService;
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -29,14 +38,21 @@ public class SecurityConfiguration {
                     registry.requestMatchers("/css/**", "/js/**", "/images/**").permitAll();
                     registry.requestMatchers("/admin/**").hasRole("ADMIN");
                     registry.requestMatchers("/manager/**").hasRole("MANAGER");
+                    registry.requestMatchers("/employee/**").hasRole("EMPLOYEE");
                     registry.anyRequest().authenticated();
                 })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
                             .loginPage("/login")
-                            .successHandler(new AuthenticationSuccessHandler())
+                            .successHandler(customAuthenticationSuccessHandler)
+                            .failureHandler(customAuthenticationFailureHandler)
                             .permitAll();
                 })
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
                 .build();
     }
 
@@ -56,5 +72,18 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://nhp1807.github.io")); // Địa chỉ frontend React
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // Thêm PATCH nếu cần
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // Cho phép gửi cookie hoặc header xác thực
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả các endpoint
+        return source;
     }
 }

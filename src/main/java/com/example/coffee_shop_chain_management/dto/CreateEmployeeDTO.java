@@ -16,6 +16,5 @@ public class CreateEmployeeDTO {
     String phone;
     String email;
     String address;
-    String chatID;
     Long branchID;
 }

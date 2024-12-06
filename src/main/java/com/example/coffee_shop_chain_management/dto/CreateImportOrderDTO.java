@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateImportOrderDTO {
-    Long supplierId;
-    Long branchId;
+    Long supplierID;
+    Long branchID;
     String paymentMethod;
     List<DetailImportOrderDTO> detailImportOrders;
 }
