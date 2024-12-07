@@ -4,6 +4,7 @@ import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
+import com.example.coffee_shop_chain_management.response.ProductStatResponse;
 import com.example.coffee_shop_chain_management.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,10 @@ public class ProductController {
     @DeleteMapping("/delete/{id}")
     public APIResponse<ProductResponse> deleteProduct(@PathVariable Long id) {
         return productService.deleteProductById(id);
+    }
+
+    @GetMapping("/get/stat")
+    public APIResponse<List<ProductStatResponse>> getProductStat() {
+        return productService.getProductStat();
     }
 }

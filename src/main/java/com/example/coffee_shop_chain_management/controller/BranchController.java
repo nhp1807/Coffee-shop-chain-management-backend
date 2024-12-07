@@ -50,8 +50,13 @@ public class BranchController {
         return branchService.deleteBranchById(id);
     }
 
-    @GetMapping("/get/stat/{id}")
+    @PostMapping("/get/stat/{id}")
     public APIResponse<BranchStatResponse> getBranchStat(@PathVariable Long id, @RequestBody DateRangeDTO dateRangeDTO) {
         return branchService.getBranchStat(id, dateRangeDTO);
+    }
+
+    @PostMapping("/get/stat/all")
+    public APIResponse<List<BranchStatResponse>> getAllBranchStat(@RequestBody DateRangeDTO dateRangeDTO) {
+        return branchService.getAllBranchStats(dateRangeDTO);
     }
 }

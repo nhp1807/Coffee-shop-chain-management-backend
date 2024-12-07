@@ -124,6 +124,19 @@ public class BranchService {
         return new APIResponse<>(null, "Branch deleted successfully", true);
     }
 
+    public APIResponse<List<BranchStatResponse>> getAllBranchStats(DateRangeDTO dateRangeDTO) {
+        List<Branch> branches = branchRepository.findAll();
+        List<BranchStatResponse> branchStatResponses = new ArrayList<>();
+
+        for (Branch branch : branches) {
+            BranchStatResponse branchStatResponse = toBranchStatResponse(branch, dateRangeDTO);
+
+            branchStatResponses.add(branchStatResponse);
+        }
+
+        return new APIResponse<>(branchStatResponses, "Branch stats retrieved successfully", true);
+    }
+
     public APIResponse<BranchStatResponse> getBranchStat(Long id, DateRangeDTO dateRangeDTO) {
         Optional<Branch> branchExisted = branchRepository.findById(id);
 
@@ -133,34 +146,7 @@ public class BranchService {
 
         Branch branch = branchExisted.get();
 
-        LocalDateTime startDate = dateRangeDTO.getStartDate().atStartOfDay();
-        LocalDateTime endDate = dateRangeDTO.getEndDate().atTime(LocalTime.MAX);
-
-        BranchStatResponse branchStatResponse = new BranchStatResponse();
-        branchStatResponse.setBranchID(branch.getBranchID());
-        branchStatResponse.setTotalEmployees(branch.getEmployees().size());
-
-        long totalExportedOrdersMoney = 0;
-        long totalImportedOrdersMoney = 0;
-
-        List<ExportOrder> exportOrders = exportOrderRepository.findByBranch_BranchID(id);
-        for (ExportOrder exportOrder : exportOrders) {
-            if (exportOrder.getDate().isAfter(startDate) && exportOrder.getDate().isBefore(endDate)) {
-                totalExportedOrdersMoney += exportOrder.getTotal();
-            }
-        }
-
-        List<ImportOrder> importOrders = importOrderRepository.findByBranch_BranchID(id);
-        for (ImportOrder importOrder : importOrders) {
-            if (importOrder.getDate().isAfter(startDate) && importOrder.getDate().isBefore(endDate)) {
-                totalImportedOrdersMoney += importOrder.getTotal();
-            }
-        }
-
-        branchStatResponse.setTotalExportedOrders(exportOrders.size());
-        branchStatResponse.setTotalExportedOrdersMoney(totalExportedOrdersMoney);
-        branchStatResponse.setTotalImportedOrders(importOrders.size());
-        branchStatResponse.setTotalImportedOrdersMoney(totalImportedOrdersMoney);
+        BranchStatResponse branchStatResponse = toBranchStatResponse(branch, dateRangeDTO);
 
         return new APIResponse<>(branchStatResponse, "Branch stat retrieved successfully", true);
     }
@@ -172,5 +158,42 @@ public class BranchService {
         branchResponse.setPhone(branch.getPhone());
         branchResponse.setFax(branch.getFax());
         return branchResponse;
+    }
+
+    public BranchStatResponse toBranchStatResponse(Branch branch, DateRangeDTO dateRangeDTO) {
+        LocalDateTime startDate = (dateRangeDTO.getStartDate() != null
+                ? dateRangeDTO.getStartDate().atStartOfDay()
+                : LocalDateTime.MIN);
+        LocalDateTime endDate = (dateRangeDTO.getEndDate() != null
+                ? dateRangeDTO.getEndDate().atTime(LocalTime.MAX)
+                : LocalDateTime.MAX);
+
+        BranchStatResponse branchStatResponse = new BranchStatResponse();
+        branchStatResponse.setBranchID(branch.getBranchID());
+        branchStatResponse.setTotalEmployees(branch.getEmployees().size());
+
+        long totalExportedOrdersMoney = 0;
+        long totalImportedOrdersMoney = 0;
+
+        List<ExportOrder> exportOrders = exportOrderRepository.findByBranch_BranchID(branch.getBranchID());
+        for (ExportOrder exportOrder : exportOrders) {
+            if (exportOrder.getDate().isAfter(startDate) && exportOrder.getDate().isBefore(endDate)) {
+                totalExportedOrdersMoney += exportOrder.getTotal();
+            }
+        }
+
+        List<ImportOrder> importOrders = importOrderRepository.findByBranch_BranchID(branch.getBranchID());
+        for (ImportOrder importOrder : importOrders) {
+            if (importOrder.getDate().isAfter(startDate) && importOrder.getDate().isBefore(endDate)) {
+                totalImportedOrdersMoney += importOrder.getTotal();
+            }
+        }
+
+        branchStatResponse.setTotalExportedOrders(exportOrders.size());
+        branchStatResponse.setTotalExportedOrdersMoney(totalExportedOrdersMoney);
+        branchStatResponse.setTotalImportedOrders(importOrders.size());
+        branchStatResponse.setTotalImportedOrdersMoney(totalImportedOrdersMoney);
+
+        return branchStatResponse;
     }
 }
