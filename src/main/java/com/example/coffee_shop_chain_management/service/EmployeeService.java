@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -32,15 +33,22 @@ public class EmployeeService {
     }
 
     public APIResponse<EmployeeResponse> getEmployeeById(Long id) {
-        Employee employee = employeeRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
-        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
+        Optional<Employee> employee = employeeRepository.findById(id);
+
+        if(!employee.isPresent()) {
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+        return new APIResponse<>(toEmployeeResponse(employee.get()), "Employee retrieved successfully", true);
     }
 
     public APIResponse<EmployeeResponse> updateEmployeeChatId(Long employeeId, String chatId) {
-        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found"));
-        employee.setChatID(chatId);
+        Optional<Employee> employeeExited = employeeRepository.findById(employeeId);
+        if (!employeeExited.isPresent()) {
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+        Employee employee = employeeExited.get();
 
+        employee.setChatID(chatId);
         employeeRepository.save(employee);
         return new APIResponse<>(toEmployeeResponse(employee), "Employee chatID updated successfully", true);
     }
@@ -73,8 +81,11 @@ public class EmployeeService {
     }
 
     public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {
-        Employee employee = employeeRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
+        Optional<Employee> employeeExited = employeeRepository.findById(id);
+        if (!employeeExited.isPresent()) {
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+        Employee employee = employeeExited.get();
 
         if (employeeDTO.getName() != null) {
             employee.setName(employeeDTO.getName());

@@ -8,6 +8,7 @@ import com.example.coffee_shop_chain_management.repository.EmployeeRepository;
 import com.example.coffee_shop_chain_management.repository.TimesheetRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.TimesheetResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class TimesheetService {
          return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheets retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<TimesheetResponse> createTimesheet(CreateTimesheetDTO timesheetDTO) {
         Timesheet timesheet = new Timesheet();
         timesheet.setDate(LocalDateTime.now());
@@ -84,6 +86,7 @@ public class TimesheetService {
         return new APIResponse<>(timesheets.stream().map(this::toTimesheetResponse).toList(), "Timesheet retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<TimesheetResponse> updateTimesheet(Long timesheetId, UpdateTimesheetDTO timesheetDTO) {
         Optional<Timesheet> timesheetExisted = timesheetRepository.findById(timesheetId);
 
@@ -105,6 +108,7 @@ public class TimesheetService {
         return new APIResponse<>(toTimesheetResponse(timesheet), "Timesheet updated successfully", true);
     }
 
+    @Transactional
     public APIResponse<TimesheetResponse> deleteTimesheet(Timesheet timesheet) {
         if (!timesheetRepository.existsById(timesheet.getTimesheetID())) {
             return new APIResponse<>(null, "Timesheet not found", false);
@@ -113,6 +117,7 @@ public class TimesheetService {
         return new APIResponse<>(null, "Timesheet deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<TimesheetResponse> deleteTimesheetById(Long id) {
         if (!timesheetRepository.existsById(id)) {
             return new APIResponse<>(null, "Timesheet not found", false);
