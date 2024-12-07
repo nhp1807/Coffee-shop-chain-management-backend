@@ -1,20 +1,23 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateBranchDTO;
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateBranchDTO;
-import com.example.coffee_shop_chain_management.entity.Account;
-import com.example.coffee_shop_chain_management.entity.Branch;
-import com.example.coffee_shop_chain_management.entity.Material;
-import com.example.coffee_shop_chain_management.entity.Storage;
+import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.BranchRepository;
 
+import com.example.coffee_shop_chain_management.repository.ExportOrderRepository;
+import com.example.coffee_shop_chain_management.repository.ImportOrderRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
+import com.example.coffee_shop_chain_management.response.BranchStatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +30,12 @@ public class BranchService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ExportOrderRepository exportOrderRepository;
+
+    @Autowired
+    private ImportOrderRepository importOrderRepository;
 
     public APIResponse<List<BranchResponse>> getAllBranches() {
         List<Branch> branches = branchRepository.findAll();
@@ -113,6 +122,47 @@ public class BranchService {
 
         branchRepository.deleteById(id);
         return new APIResponse<>(null, "Branch deleted successfully", true);
+    }
+
+    public APIResponse<BranchStatResponse> getBranchStat(Long id, DateRangeDTO dateRangeDTO) {
+        Optional<Branch> branchExisted = branchRepository.findById(id);
+
+        if (!branchExisted.isPresent()) {
+            return new APIResponse<>(null, "Branch not found", false);
+        }
+
+        Branch branch = branchExisted.get();
+
+        LocalDateTime startDate = dateRangeDTO.getStartDate().atStartOfDay();
+        LocalDateTime endDate = dateRangeDTO.getEndDate().atTime(LocalTime.MAX);
+
+        BranchStatResponse branchStatResponse = new BranchStatResponse();
+        branchStatResponse.setBranchID(branch.getBranchID());
+        branchStatResponse.setTotalEmployees(branch.getEmployees().size());
+
+        long totalExportedOrdersMoney = 0;
+        long totalImportedOrdersMoney = 0;
+
+        List<ExportOrder> exportOrders = exportOrderRepository.findByBranch_BranchID(id);
+        for (ExportOrder exportOrder : exportOrders) {
+            if (exportOrder.getDate().isAfter(startDate) && exportOrder.getDate().isBefore(endDate)) {
+                totalExportedOrdersMoney += exportOrder.getTotal();
+            }
+        }
+
+        List<ImportOrder> importOrders = importOrderRepository.findByBranch_BranchID(id);
+        for (ImportOrder importOrder : importOrders) {
+            if (importOrder.getDate().isAfter(startDate) && importOrder.getDate().isBefore(endDate)) {
+                totalImportedOrdersMoney += importOrder.getTotal();
+            }
+        }
+
+        branchStatResponse.setTotalExportedOrders(exportOrders.size());
+        branchStatResponse.setTotalExportedOrdersMoney(totalExportedOrdersMoney);
+        branchStatResponse.setTotalImportedOrders(importOrders.size());
+        branchStatResponse.setTotalImportedOrdersMoney(totalImportedOrdersMoney);
+
+        return new APIResponse<>(branchStatResponse, "Branch stat retrieved successfully", true);
     }
 
     public BranchResponse toBranchResponse(Branch branch) {

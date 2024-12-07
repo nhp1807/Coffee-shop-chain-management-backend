@@ -5,6 +5,7 @@ import com.example.coffee_shop_chain_management.dto.UpdateAccountDTO;
 import com.example.coffee_shop_chain_management.entity.Account;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.AccountResponse;
+import com.example.coffee_shop_chain_management.response.AccountStatResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
 import com.example.coffee_shop_chain_management.service.AccountService;
 import lombok.Getter;
@@ -50,5 +51,10 @@ public class AccountController {
     @DeleteMapping("/delete/{id}")
     public APIResponse<AccountResponse> deleteAccount(@PathVariable Long id) {
         return accountService.deleteAccountById(id);
+    }
+
+    @GetMapping("/get/stat")
+    public APIResponse<AccountStatResponse> getAccountStat() {
+        return accountService.getAccountStat();
     }
 }

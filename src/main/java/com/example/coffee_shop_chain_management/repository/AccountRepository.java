@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
+    boolean existsByBranch_BranchID(Long branchID);
+
     // Phương thức tìm kiếm tài khoản dựa trên username
     Optional<Account> findByUsername(String username);
 

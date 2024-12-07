@@ -11,5 +11,7 @@ import java.util.List;
 public interface ExportOrderRepository extends JpaRepository<ExportOrder, Long> {
     // Truy vấn đơn hàng xuất theo nhân viên
     List<ExportOrder> findByEmployee(Employee employee);
+
+    List<ExportOrder> findByBranch_BranchID(Long branchID);
 }
 

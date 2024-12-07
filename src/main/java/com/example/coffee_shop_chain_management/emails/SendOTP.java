@@ -35,8 +35,6 @@ public class SendOTP {
 
 
     public static void main(String[] args) {
-        SendOTP sendMailConfirm = new SendOTP();
-        sendMailConfirm.sendMail("Hello", "sb23092002@gmail.com");
     }
 
     public int generateOTP() {
@@ -107,10 +105,10 @@ public class SendOTP {
         return false;
     }
 
-    public void sendMail(String text, String sendTo) {
+    public boolean sendMail(String text, String sendTo) {
         if (!isValidEmail(sendTo)) {
             System.out.println("Email không hợp lệ: " + sendTo);
-            return;
+            return false;
         }
 
         // Cấu hình các thuộc tính cho phiên email
@@ -148,7 +146,8 @@ public class SendOTP {
 
         } catch (MessagingException e) {
             e.printStackTrace();
-
         }
+
+        return true;
     }
 }
