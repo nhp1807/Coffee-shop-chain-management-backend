@@ -8,9 +8,9 @@ import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.EmployeeResponse;
 import com.example.coffee_shop_chain_management.response.ExportOrderResponse;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,55 +82,54 @@ public class ExportOrderService {
         // Khởi tạo danh sách ExportOrderDetail
         List<DetailExportOrder> detailExportOrders = new ArrayList<>();
 
-        for (DetailExportOrderDTO detailExportOrderDTO : exportOrderDTO.getDetailExportOrders()) {
-            DetailExportOrder detailExportOrder = new DetailExportOrder();
-
-            // Tìm sản phẩm theo tên
-            Product product = productRepository.findByName(detailExportOrderDTO.getProductName());
-
-            // Lấy danh sách product_material
-            List<ProductMaterial> productMaterials = productMaterialRepository.findByProduct_ProductID(product.getProductID());
-
-            // Kiểm tra và trừ số lượng nguyên liệu trong kho
-            for (ProductMaterial productMaterial : productMaterials) {
-                Material material = productMaterial.getMaterial();
-                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), branch.get().getBranchID());
-                // Kiểm tra số lượng nguyên liệu trong kho
-                if (storage == null || storage.getQuantity() < productMaterial.getQuantity() * detailExportOrderDTO.getQuantity()) {
-                    return new APIResponse<>(null, "Not enough material in storage for product: " + product.getName(), false);
-                }
-            }
-
-            // Trừ số lượng nguyên liệu trong kho
-            for (ProductMaterial productMaterial : productMaterials) {
-                Material material = productMaterial.getMaterial();
-                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), branch.get().getBranchID());
-                storage.setQuantity(storage.getQuantity() - productMaterial.getQuantity() * detailExportOrderDTO.getQuantity());
-                storageRepository.save(storage);
-            }
-
-
-            DetailExportOrderId detailExportOrderId = new DetailExportOrderId();
-            detailExportOrderId.setExportOrderId(exportOrder.getExportID());
-            detailExportOrderId.setExportOrderId(product.getProductID());
-            
-            detailExportOrder.setId(detailExportOrderId);
-            detailExportOrder.setProduct(product);
-            detailExportOrder.setQuantity(detailExportOrderDTO.getQuantity());
-            detailExportOrder.setExportOrder(exportOrder);
-
-            detailExportOrder.setDescription("Default description");
-            
-            //detailExportOrder.setPrice(product.getPrice());
-
-            // Tính tổng tiền
-            total += product.getPrice() * detailExportOrderDTO.getQuantity();
-
-            detailExportOrder.setPrice(total);
-
-            detailExportOrders.add(detailExportOrder);
-        }
-
+//        for (DetailExportOrderDTO detailExportOrderDTO : exportOrderDTO.getDetailExportOrders()) {
+//            DetailExportOrder detailExportOrder = new DetailExportOrder();
+//
+//            // Tìm sản phẩm theo tên
+//            Product product = productRepository.findByName(detailExportOrderDTO.getProductName());
+//
+//            // Lấy danh sách product_material
+//            List<ProductMaterial> productMaterials = productMaterialRepository.findByProduct_ProductID(product.getProductID());
+//
+//            // Kiểm tra và trừ số lượng nguyên liệu trong kho
+//            for (ProductMaterial productMaterial : productMaterials) {
+//                Material material = productMaterial.getMaterial();
+//                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), branch.get().getBranchID());
+//                // Kiểm tra số lượng nguyên liệu trong kho
+//                if (storage == null || storage.getQuantity() < productMaterial.getQuantity() * detailExportOrderDTO.getQuantity()) {
+//                    return new APIResponse<>(null, "Not enough material in storage for product: " + product.getName(), false);
+//                }
+//            }
+//
+//            // Trừ số lượng nguyên liệu trong kho
+//            for (ProductMaterial productMaterial : productMaterials) {
+//                Material material = productMaterial.getMaterial();
+//                Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), branch.get().getBranchID());
+//                storage.setQuantity(storage.getQuantity() - productMaterial.getQuantity() * detailExportOrderDTO.getQuantity());
+//                storageRepository.save(storage);
+//            }
+//
+//
+//            DetailExportOrderId detailExportOrderId = new DetailExportOrderId();
+//            detailExportOrderId.setExportOrderId(exportOrder.getExportID());
+//            detailExportOrderId.setExportOrderId(product.getProductID());
+//
+//            detailExportOrder.setId(detailExportOrderId);
+//            detailExportOrder.setProduct(product);
+//            detailExportOrder.setQuantity(detailExportOrderDTO.getQuantity());
+//            detailExportOrder.setExportOrder(exportOrder);
+//
+//            detailExportOrder.setDescription("Default description");
+//
+//            //detailExportOrder.setPrice(product.getPrice());
+//
+//            // Tính tổng tiền
+//            total += product.getPrice() * detailExportOrderDTO.getQuantity();
+//
+//            detailExportOrder.setPrice(total);
+//
+//            detailExportOrders.add(detailExportOrder);
+//        }
 
         exportOrder.setTotal(total);
         exportOrder.setDetailExportOrders(detailExportOrders);
