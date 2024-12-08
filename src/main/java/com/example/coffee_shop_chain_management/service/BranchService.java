@@ -11,7 +11,6 @@ import com.example.coffee_shop_chain_management.repository.ExportOrderRepository
 import com.example.coffee_shop_chain_management.repository.ImportOrderRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
-import jakarta.transaction.Transactional;
 import com.example.coffee_shop_chain_management.response.BranchStatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
