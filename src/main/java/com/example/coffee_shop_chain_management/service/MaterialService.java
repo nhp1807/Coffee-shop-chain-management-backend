@@ -12,8 +12,10 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.MaterialResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -31,6 +33,7 @@ public class MaterialService {
         return new APIResponse<>(materials.stream().map(this::toMaterialResponse).toList(), "Material retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<MaterialResponse> createMaterial(CreateMaterialDTO createMaterialDTO) {
         if(materialRepository.existsByName(createMaterialDTO.getName())) {
             return new APIResponse<>(null, "Material already exists", false);
@@ -64,6 +67,7 @@ public class MaterialService {
         return new APIResponse<>(toMaterialResponse(material), "Material retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<MaterialResponse> updateMaterial(Long id, UpdateMaterialDTO updateMaterialDTO) {
         Material material = materialRepository.findById(id).orElse(null);
 
@@ -82,12 +86,15 @@ public class MaterialService {
         return new APIResponse<>(toMaterialResponse(updatedMaterial), "Material updated successfully", true);
     }
 
+    @Transactional
     public APIResponse<MaterialResponse> deleteMaterialById(Long id) {
-        Material material = materialRepository.findById(id).orElse(null);
+        Optional<Material> materialExisted = materialRepository.findById(id);
 
-        if (material == null) {
+        if (!materialExisted.isPresent()) {
             return new APIResponse<>(null, "Material not found", false);
         }
+
+        Material material = materialExisted.get();
 
         materialRepository.deleteById(id);
 

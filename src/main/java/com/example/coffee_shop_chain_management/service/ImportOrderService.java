@@ -49,6 +49,12 @@ public class ImportOrderService {
         return new APIResponse<>(importOrders.stream().map(this::toImportOrderRespone).toList(), "Import orders retrieved successfully", true);
     }
 
+    public APIResponse<List<ImportOrderResponse>> getImportOrderByBranchId(Long branchId) {
+        List<ImportOrder> importOrders = importOrderRepository.findByBranch_BranchID(branchId);
+
+        return new APIResponse<>(importOrders.stream().map(this::toImportOrderRespone).toList(), "Import orders retrieved successfully", true);
+    }
+
     @Transactional
     public APIResponse<ImportOrderResponse> createImportOrder(CreateImportOrderDTO importOrderDTO) {
         // Tạo đối tượng ImportOrder mới
@@ -231,11 +237,11 @@ public class ImportOrderService {
 
         double total = importOrder.getTotal();
 
-        Material material = materialRepository.findByName(detailImportOrderDTO.getMaterialName());
+        Material material = materialRepository.findByName(detailImportOrderDTO.getName());
 
         if (material == null) {
             material = new Material();
-            material.setName(detailImportOrderDTO.getMaterialName());
+            material.setName(detailImportOrderDTO.getName());
             materialRepository.save(material);
 
             List<Branch> branches = branchRepository.findAll();
@@ -356,8 +362,8 @@ public class ImportOrderService {
         importOrderResponse.setStatus(importOrder.getStatus());
         importOrderResponse.setDetailImportOrders(importOrder.getDetailImportOrders().stream().map(detailImportOrder -> {
             DetailImportOrderResponse detailImportOrderResponse = new DetailImportOrderResponse();
-            detailImportOrderResponse.setMaterialId(detailImportOrder.getMaterial().getMaterialID());
-            detailImportOrderResponse.setMaterialName(detailImportOrder.getMaterial().getName());
+            detailImportOrderResponse.setMaterialID(detailImportOrder.getMaterial().getMaterialID());
+            detailImportOrderResponse.setName(detailImportOrder.getMaterial().getName());
             detailImportOrderResponse.setQuantity(detailImportOrder.getQuantity());
             detailImportOrderResponse.setPrice(detailImportOrder.getPrice());
             detailImportOrderResponse.setDescription(detailImportOrder.getDescription());

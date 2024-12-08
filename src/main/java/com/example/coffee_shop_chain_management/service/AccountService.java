@@ -9,11 +9,14 @@ import com.example.coffee_shop_chain_management.repository.AccountRepository;
 import com.example.coffee_shop_chain_management.repository.BranchRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.AccountResponse;
+import com.example.coffee_shop_chain_management.response.AccountStatResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,8 @@ public class AccountService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SendOTP sendOTP;
+    @Value("${telegram.bot.link}")
+    private String TELEGRAM_BOT_LINK;
 
     public APIResponse<List<AccountResponse>> getAllAccounts(){
         List<Account> accounts = accountRepository.findAll();
@@ -39,21 +44,31 @@ public class AccountService {
     @Transactional
     public APIResponse<AccountResponse> createAccount(CreateAccountDTO accountDTO){
         if(accountRepository.existsByUsername(accountDTO.getUsername())){
-            throw new RuntimeException("Username is already taken!");
+            return new APIResponse<>(null, "Account already exists!", false);
+        }
+
+        Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
+        // Neu co tai khoan co branch da ton tai thi khong tao tai khoan moi
+        if (accountRepository.existsByBranch_BranchID(branch.getBranchID())) {
+            return new APIResponse<>(null, "This branch has another account! ", false);
         }
 
         Account account = new Account();
         account.setUsername(accountDTO.getUsername());
         account.setPassword(passwordEncoder.encode("1234"));
+        account.setRole("MANAGER");
         StringBuilder message = new StringBuilder();
         message.append("Your account is ").append("\n");
         message.append("Username: ").append(accountDTO.getUsername()).append("\n");
-        message.append("Password: ").append("1234");
-        sendOTP.sendMail(message.toString() ,accountDTO.getEmail());
-        account.setEmail(accountDTO.getEmail());
-        account.setRole("MANAGER");
+        message.append("Password: ").append("1234").append("\n");
+        message.append("Click here to verify with telegram: ").append(TELEGRAM_BOT_LINK).append(accountDTO.getUsername());
+        boolean sendStatus = sendOTP.sendMail(message.toString() ,accountDTO.getEmail());
 
-        Branch branch =  branchRepository.findById(accountDTO.getBranchID()).get();
+        if (!sendStatus) {
+            return new APIResponse<>(null, "Send email failed!", false);
+        }
+
+        account.setEmail(accountDTO.getEmail());
         account.setBranch(branch);
 
         Account newAccount = accountRepository.save(account);
@@ -129,17 +144,33 @@ public class AccountService {
             return new APIResponse<>(null, "Account not found!", false);
         }
 
+        if (account.getRole().equals("ADMIN")) {
+            return new APIResponse<>(null, "Cannot delete admin account!", false);
+        }
+
         accountRepository.delete(account);
         return new APIResponse<>(null, "Account deleted successfully!", true);
     }
 
+    @Transactional
     public APIResponse<AccountResponse> deleteAccountById(Long id){
         if (!accountRepository.existsById(id)) {
             return new APIResponse<>(null, "Account not found!", false);
         }
 
+        if (accountRepository.findById(id).get().getRole().equals("ADMIN")) {
+            return new APIResponse<>(null, "Cannot delete admin account!", false);
+        }
+
         accountRepository.deleteById(id);
         return new APIResponse<>(null, "Account deleted successfully!", true);
+    }
+
+    public APIResponse<AccountStatResponse> getAccountStat(){
+        List<Account> accounts = accountRepository.findAll();
+        int totalAccounts = accounts.size();
+
+        return new APIResponse<>(new AccountStatResponse(totalAccounts), "Account statistics retrieved successfully!", true);
     }
 
     public AccountResponse toAccountResponse(Account account){

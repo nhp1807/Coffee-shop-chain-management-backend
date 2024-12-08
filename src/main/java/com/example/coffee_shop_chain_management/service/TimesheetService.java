@@ -9,10 +9,12 @@ import com.example.coffee_shop_chain_management.repository.TimesheetRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.TimesheetResponse;
 import jakarta.transaction.Transactional;
+import com.example.coffee_shop_chain_management.telegram_bot.NotificationBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +25,8 @@ public class TimesheetService {
     private TimesheetRepository timesheetRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private NotificationBot notificationBot;
 
     public APIResponse<List<TimesheetResponse>> getAllTimesheets() {
         List<Timesheet> timesheets = timesheetRepository.findAll();
@@ -31,12 +35,17 @@ public class TimesheetService {
 
     @Transactional
     public APIResponse<TimesheetResponse> createTimesheet(CreateTimesheetDTO timesheetDTO) {
+        LocalDateTime date = LocalDateTime.now();
+        // chuyen sang dinh dang dd/MM/yyyy HH:mm:ss
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedDate = date.format(formatter);
+
         Timesheet timesheet = new Timesheet();
-        timesheet.setDate(LocalDateTime.now());
+        timesheet.setDate(date);
         timesheet.setShift(timesheetDTO.getShift());
 
         // Tìm employee theo id
-        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeId()).orElse(null);
+        Employee employee = employeeRepository.findById(timesheetDTO.getEmployeeID()).orElse(null);
         if (employee == null) {
             return new APIResponse<>(null, "Employee not found", false);
         }
@@ -51,7 +60,11 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(newTimesheet.getTimesheetID());
         timesheetResponse.setDate(newTimesheet.getDate());
         timesheetResponse.setShift(newTimesheet.getShift());
-        timesheetResponse.setEmployeeId(newTimesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setEmployeeID(newTimesheet.getEmployee().getEmployeeID());
+
+        // Chuyen
+
+        notificationBot.sendMessage("You have checked in at " + formattedDate + " with shift " + timesheet.getShift(), employee.getChatID());
 
         return new APIResponse<>(timesheetResponse, "Timesheet created successfully", true);
     }
@@ -131,8 +144,8 @@ public class TimesheetService {
         timesheetResponse.setTimesheetID(timesheet.getTimesheetID());
         timesheetResponse.setDate(timesheet.getDate());
         timesheetResponse.setShift(timesheet.getShift());
-        timesheetResponse.setEmployeeId(timesheet.getEmployee().getEmployeeID());
-        timesheetResponse.setBranchId(timesheet.getEmployee().getBranch().getBranchID());
+        timesheetResponse.setEmployeeID(timesheet.getEmployee().getEmployeeID());
+        timesheetResponse.setBranchID(timesheet.getEmployee().getBranch().getBranchID());
         return timesheetResponse;
     }
 }

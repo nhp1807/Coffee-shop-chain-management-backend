@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TimesheetResponse {
     Long timesheetID;
-    Long employeeId;
+    Long employeeID;
     LocalDateTime date;
     String shift;
-    Long BranchId;
+    Long BranchID;
 }

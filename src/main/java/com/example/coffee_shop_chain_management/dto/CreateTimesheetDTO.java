@@ -12,5 +12,5 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateTimesheetDTO {
     String shift;
-    Long employeeId;
+    Long employeeID;
 }

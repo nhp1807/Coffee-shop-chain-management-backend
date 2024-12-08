@@ -26,7 +26,7 @@ public class MaterialController {
     }
 
     @GetMapping("/get/{id}")
-    public APIResponse<MaterialResponse> getMaterialById(Long id) {
+    public APIResponse<MaterialResponse> getMaterialById(@PathVariable Long id) {
         return materialService.getMaterialById(id);
     }
 

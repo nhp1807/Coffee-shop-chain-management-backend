@@ -8,10 +8,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DetailImportOrderResponse {
-    Long materialID;
-    String name;
-    Double quantity;
-    Double price;
-    String description;
+public class BranchStatResponse {
+    long branchID;
+    int totalEmployees;
+    int totalExportedOrders;
+    long totalExportedOrdersMoney;
+    int totalImportedOrders;
+    long totalImportedOrdersMoney;
 }

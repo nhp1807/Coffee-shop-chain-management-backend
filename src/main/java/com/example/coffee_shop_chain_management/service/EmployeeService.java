@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,24 +30,31 @@ public class EmployeeService {
 
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
+
         return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);
     }
 
     public APIResponse<EmployeeResponse> getEmployeeById(Long id) {
-        Optional<Employee> employee = employeeRepository.findById(id);
+        Optional<Employee> employeeExisted = employeeRepository.findById(id);
 
-        if(!employee.isPresent()) {
+        if(!employeeExisted.isPresent()){
             return new APIResponse<>(null, "Employee not found", false);
         }
-        return new APIResponse<>(toEmployeeResponse(employee.get()), "Employee retrieved successfully", true);
+
+        return new APIResponse<>(toEmployeeResponse(employeeExisted.get()), "Employee retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> updateEmployeeChatId(Long employeeId, String chatId) {
-        Optional<Employee> employeeExited = employeeRepository.findById(employeeId);
-        if (!employeeExited.isPresent()) {
+        Optional<Employee> employeeExisted = employeeRepository.findById(employeeId);
+
+        if(!employeeExisted.isPresent()){
             return new APIResponse<>(null, "Employee not found", false);
         }
-        Employee employee = employeeExited.get();
+
+        Employee employee = employeeExisted.get();
+
+        employee.setChatID(chatId);
 
         employee.setChatID(chatId);
         employeeRepository.save(employee);
@@ -54,16 +62,22 @@ public class EmployeeService {
     }
 
     public APIResponse<EmployeeResponse> getEmployeeByEmail(String email) {
-        Employee employee = employeeRepository.findByEmail(email).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
-        return new APIResponse<>(toEmployeeResponse(employee), "Employee retrieved successfully", true);
+        Optional<Employee> employeeExisted = employeeRepository.findByEmail(email);
+
+        if(!employeeExisted.isPresent()){
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+
+        return new APIResponse<>(toEmployeeResponse(employeeExisted.get()), "Employee retrieved successfully", true);
     }
 
     public APIResponse<List<EmployeeResponse>> getEmployeeByBranchId(Long branchId) {
         List<Employee> employees = employeeRepository.findByBranch_BranchID(branchId);
+
         return new APIResponse<>(employees.stream().map(this::toEmployeeResponse).toList(), "Employees retrieved successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> createEmployee(CreateEmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());
@@ -80,6 +94,7 @@ public class EmployeeService {
         return new APIResponse<>(toEmployeeResponse(employeeRepository.save(newEmployee)), "Employee created successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {
         Optional<Employee> employeeExited = employeeRepository.findById(id);
         if (!employeeExited.isPresent()) {
@@ -112,6 +127,7 @@ public class EmployeeService {
 
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> deleteEmployee(Employee employee) {
         if (!employeeRepository.existsById(employee.getEmployeeID())) {
             return new APIResponse<>(null, "Employee not found", false);
@@ -120,6 +136,7 @@ public class EmployeeService {
         return new APIResponse<>(null, "Employee deleted successfully", true);
     }
 
+    @Transactional
     public APIResponse<EmployeeResponse> deleteEmployeeById(Long id) {
         if (!employeeRepository.existsById(id)) {
             return new APIResponse<>(null, "Employee not found", false);

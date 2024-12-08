@@ -33,6 +33,11 @@ public class ImportOrderController {
         return importOrderService.getImportOrderById(id);
     }
 
+    @GetMapping("/get/branch/{branchID}")
+    public APIResponse<List<ImportOrderResponse>> getImportOrderByBranchId(@PathVariable Long branchID) {
+        return importOrderService.getImportOrderByBranchId(branchID);
+    }
+
     @GetMapping("/get/un-confirmed")
     public APIResponse<List<ImportOrderResponse>> getUnconfirmedImportOrders() {
         return importOrderService.getImportOrderByStatus(false);

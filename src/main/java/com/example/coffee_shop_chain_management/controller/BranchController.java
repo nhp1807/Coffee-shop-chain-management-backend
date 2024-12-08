@@ -1,10 +1,12 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateBranchDTO;
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateBranchDTO;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
+import com.example.coffee_shop_chain_management.response.BranchStatResponse;
 import com.example.coffee_shop_chain_management.service.BranchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +48,15 @@ public class BranchController {
     @DeleteMapping("/delete/{id}")
     public APIResponse<BranchResponse> deleteBranch(@PathVariable Long id) {
         return branchService.deleteBranchById(id);
+    }
+
+    @PostMapping("/get/stat/{id}")
+    public APIResponse<BranchStatResponse> getBranchStat(@PathVariable Long id, @RequestBody DateRangeDTO dateRangeDTO) {
+        return branchService.getBranchStat(id, dateRangeDTO);
+    }
+
+    @PostMapping("/get/stat/all")
+    public APIResponse<List<BranchStatResponse>> getAllBranchStat(@RequestBody DateRangeDTO dateRangeDTO) {
+        return branchService.getAllBranchStats(dateRangeDTO);
     }
 }
