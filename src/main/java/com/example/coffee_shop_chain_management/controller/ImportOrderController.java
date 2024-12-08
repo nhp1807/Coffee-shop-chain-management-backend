@@ -53,6 +53,11 @@ public class ImportOrderController {
         return importOrderService.addDetailImportOrder(id, importOrderDTO);
     }
 
+//    @PutMapping("/update/{orderID}/{materialID}")
+//    public APIResponse<ImportOrderResponse> updateDetailImportOrder(@PathVariable Long orderID, @PathVariable Long materialID, @RequestBody DetailImportOrderDTO importOrderDTO) {
+//        return importOrderService.updateDetailImportOrder(orderID, materialID, importOrderDTO);
+//    }
+
     @DeleteMapping("/delete/{orderID}/{materialID}")
     public APIResponse<ImportOrderResponse> deleteDetailImportOrder(@PathVariable Long orderID, @PathVariable Long materialID) {
         return importOrderService.deleteDetailImportOrder(orderID, materialID);

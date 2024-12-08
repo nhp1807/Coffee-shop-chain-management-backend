@@ -222,6 +222,10 @@ public class ImportOrderService {
     public APIResponse<ImportOrderResponse> getImportOrderById(Long id) {
         ImportOrder importOrder = importOrderRepository.findById(id).orElse(null);
 
+        if (importOrder == null) {
+            return new APIResponse<>(null, "Import order not found", false);
+        }
+
         return new APIResponse<>(toImportOrderRespone(importOrder), "Import order not found", false);
     }
 
@@ -260,51 +264,36 @@ public class ImportOrderService {
 
                 storageRepository.save(newStorage);
             }
-        } else {
-            Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrder.getBranch().getBranchID());
-
-            if (storage != null) {
-                storage.setQuantity(storage.getQuantity() + detailImportOrderDTO.getQuantity());
-                storageRepository.save(storage);
-            } else {
-                Storage newStorage = new Storage();
-                newStorage.setMaterial(material);
-                newStorage.setQuantity(detailImportOrderDTO.getQuantity());
-                newStorage.setBranch(importOrder.getBranch());
-                storageRepository.save(newStorage);
-            }
         }
 
         DetailImportOrder detailImportOrder = detailImportOrderRepository.findDetailImportOrderByImportOrder_ImportIDAndMaterial_MaterialID(importOrder.getImportID(), material.getMaterialID());
 
         if (detailImportOrder != null) {
-            detailImportOrder.setQuantity(detailImportOrder.getQuantity() + detailImportOrderDTO.getQuantity());
-            detailImportOrderRepository.save(detailImportOrder);
-        } else {
-            detailImportOrder = new DetailImportOrder();
-            DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
-            detailImportOrderId.setImportOrderId(importOrder.getImportID());
-            detailImportOrderId.setMaterialId(material.getMaterialID());
-            detailImportOrder.setId(detailImportOrderId);
-
-            detailImportOrder.setMaterial(material);
-            detailImportOrder.setQuantity(detailImportOrderDTO.getQuantity());
-            detailImportOrder.setImportOrder(importOrder);
-            detailImportOrder.setPrice(detailImportOrderDTO.getPrice());
-            detailImportOrder.setDescription(detailImportOrderDTO.getDescription());
-
-            total += detailImportOrderDTO.getQuantity() * detailImportOrderDTO.getPrice();
-
-            importOrder.setTotal(total);
-
-            List<DetailImportOrder> detailImportOrders = importOrder.getDetailImportOrders();
-            detailImportOrders.add(detailImportOrder);
-            importOrder.setDetailImportOrders(detailImportOrders);
-
-            importOrderRepository.save(importOrder);
+            return new APIResponse<>(null, "Detail import order already existed", false);
         }
 
         return new APIResponse<>(null, "Detail import order added successfully", true);
+    }
+
+    @Transactional
+    public APIResponse<ImportOrderResponse> updateDetailImportOrder(Long orderID, Long materialID, DetailImportOrderDTO detailImportOrderDTO) {
+        DetailImportOrderId detailImportOrderId = new DetailImportOrderId();
+        detailImportOrderId.setImportOrderId(orderID);
+        detailImportOrderId.setMaterialId(materialID);
+
+        DetailImportOrder detailImportOrder = detailImportOrderRepository.findById(detailImportOrderId).orElse(null);
+
+        if (detailImportOrder == null) {
+            return new APIResponse<>(null, "Detail import order not found", false);
+        }
+
+        detailImportOrder.setQuantity(detailImportOrderDTO.getQuantity());
+        detailImportOrder.setPrice(detailImportOrderDTO.getPrice());
+        detailImportOrder.setDescription(detailImportOrderDTO.getDescription());
+
+        detailImportOrderRepository.save(detailImportOrder);
+
+        return new APIResponse<>(toImportOrderRespone(detailImportOrder.getImportOrder()), "Detail import order updated successfully", true);
     }
 
     @Transactional
