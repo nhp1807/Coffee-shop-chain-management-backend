@@ -31,6 +31,8 @@ public class ExportOrderService {
     private StorageRepository storageRepository;
     @Autowired
     private ProductMaterialRepository productMaterialRepository;
+    @Autowired
+    private DetailExportOrderRepository detailExportOrderRepository;
 
     // GET
     public APIResponse<List<ExportOrderResponse>> getAllExportOrders() {
@@ -44,6 +46,12 @@ public class ExportOrderService {
             return new APIResponse<>(null, "Export order not found", false);
 
         return new APIResponse<>(toExportOrderResponse(exportOrder.get()), "Export order retrieved successfully", true);
+    }
+
+    public APIResponse<List<ExportOrderResponse>> getExportOrderByBranchId(Long branchID) {
+        List<ExportOrder> exportOrders = exportOrderRepository.findByBranch_BranchID(branchID);
+
+        return new APIResponse<>(exportOrders.stream().map(this::toExportOrderResponse).toList(), "Export orders retrieved successfully", true);
     }
 
     @Transactional
@@ -182,6 +190,30 @@ public class ExportOrderService {
         }
         exportOrderRepository.deleteById(id);
         return new APIResponse<>(null, "Export order deleted successfully", true);
+    }
+
+    @Transactional
+    public APIResponse<ExportOrderResponse> deleteDetailExportOrder(Long orderID, Long productID) {
+        DetailExportOrder detailExportOrder = detailExportOrderRepository.findDetailExportOrderByExportOrder_ExportIDAndProduct_ProductID(orderID, productID);
+
+        if (detailExportOrder == null) {
+            return new APIResponse<>(null, "Detail export order not found", false);
+        }
+
+        ExportOrder exportOrder = detailExportOrder.getExportOrder();
+        exportOrder.setTotal(exportOrder.getTotal() - detailExportOrder.getPrice()*detailExportOrder.getQuantity());
+        Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(detailExportOrder.getProduct().getProductID(), exportOrder.getBranch().getBranchID());
+        storage.setQuantity(storage.getQuantity() + detailExportOrder.getQuantity());
+
+        List<DetailExportOrder> detailExportOrders = exportOrder.getDetailExportOrders();
+        detailExportOrders.remove(detailExportOrder);
+        exportOrder.setDetailExportOrders(detailExportOrders);
+
+        exportOrderRepository.save(exportOrder);
+        detailExportOrderRepository.delete(detailExportOrder);
+        storageRepository.save(storage);
+
+        return new APIResponse<>(toExportOrderResponse(exportOrder), "Detail export order deleted successfully", true);
     }
 
     public ExportOrderResponse toExportOrderResponse(ExportOrder exportOrder) {

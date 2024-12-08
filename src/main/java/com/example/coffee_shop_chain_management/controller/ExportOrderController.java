@@ -35,6 +35,11 @@ public class ExportOrderController {
         return exportOrderService.getExportOrderById(id);
     }
 
+    @GetMapping("/get/branch/{branchID}")
+    public APIResponse<List<ExportOrderResponse>> getExportOrderByBranchId(@PathVariable Long branchID) {
+        return exportOrderService.getExportOrderByBranchId(branchID);
+    }
+
     @PostMapping("/create")
     public APIResponse<ExportOrderResponse> createExportOrder(@RequestBody CreateExportOrderDTO exportOrderDTO) {
         return exportOrderService.createExportOrder(exportOrderDTO);
@@ -48,5 +53,10 @@ public class ExportOrderController {
     @DeleteMapping("/delete/{id}")
     public APIResponse<ExportOrderResponse> deleteExportOrder(@PathVariable Long id) {
         return exportOrderService.deleteExportOrderById(id);
+    }
+
+    @DeleteMapping("/delete/{orderID}/{productID}")
+    public APIResponse<ExportOrderResponse> deleteDetailExportOrder(@PathVariable Long orderID, @PathVariable Long productID) {
+        return exportOrderService.deleteDetailExportOrder(orderID, productID);
     }
 }
