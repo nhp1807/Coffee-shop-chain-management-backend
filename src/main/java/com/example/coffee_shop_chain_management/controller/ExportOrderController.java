@@ -7,6 +7,8 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ExportOrderResponse;
 import com.example.coffee_shop_chain_management.service.ExportOrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.jvnet.hk2.annotations.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/export-order")
+
 public class ExportOrderController {
     private final ExportOrderService exportOrderService;
 
+    @Autowired
     public ExportOrderController(ExportOrderService exportOrderService) {
         this.exportOrderService = exportOrderService;
     }

@@ -11,6 +11,7 @@ import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.AccountResponse;
 import com.example.coffee_shop_chain_management.response.AccountStatResponse;
 import com.example.coffee_shop_chain_management.response.BranchResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

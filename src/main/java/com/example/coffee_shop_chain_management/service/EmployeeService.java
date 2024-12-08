@@ -56,6 +56,7 @@ public class EmployeeService {
 
         employee.setChatID(chatId);
 
+        employee.setChatID(chatId);
         employeeRepository.save(employee);
         return new APIResponse<>(toEmployeeResponse(employee), "Employee chatID updated successfully", true);
     }
@@ -95,8 +96,11 @@ public class EmployeeService {
 
     @Transactional
     public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {
-        Employee employee = employeeRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Employee not found"));
+        Optional<Employee> employeeExited = employeeRepository.findById(id);
+        if (!employeeExited.isPresent()) {
+            return new APIResponse<>(null, "Employee not found", false);
+        }
+        Employee employee = employeeExited.get();
 
         if (employeeDTO.getName() != null) {
             employee.setName(employeeDTO.getName());
