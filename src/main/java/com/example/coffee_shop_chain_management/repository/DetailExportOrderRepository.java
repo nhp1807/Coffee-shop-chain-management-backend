@@ -11,5 +11,6 @@ import java.util.List;
 public interface DetailExportOrderRepository extends JpaRepository<DetailExportOrder, DetailExportOrderId> {
     // Truy vấn chi tiết đơn hàng xuất
     List<DetailExportOrder> findByProduct_ProductID(Long productID);
+    DetailExportOrder findDetailExportOrderByExportOrder_ExportIDAndProduct_ProductID(Long exportOrderId, Long productID);
 }
 
