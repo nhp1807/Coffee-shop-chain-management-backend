@@ -81,7 +81,7 @@ public class ExportOrderService {
             Product product = productRepository.findByName(detailExportOrderDTO.getProductName());
 
             // Lấy danh sách product_material
-            List<ProductMaterial> productMaterials = productMaterialRepository.findByProductId(product.getProductID());
+            List<ProductMaterial> productMaterials = productMaterialRepository.findByProduct_ProductID(product.getProductID());
 
             // Kiểm tra và trừ số lượng nguyên liệu trong kho
             for (ProductMaterial productMaterial : productMaterials) {

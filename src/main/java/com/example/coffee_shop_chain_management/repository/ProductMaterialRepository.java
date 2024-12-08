@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface ProductMaterialRepository extends JpaRepository<ProductMaterial, ProductMaterialId> {
     // Truy vấn nếu cần
-    List<ProductMaterial> findByProductId(Long productId);
+//    List<ProductMaterial> findByProductID(Long productId);
+
+    List<ProductMaterial> findByProduct_ProductID(Long productId);
 }
 
