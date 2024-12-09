@@ -22,8 +22,8 @@ public class DetailExportOrderController {
     }
 
     @PutMapping("/update/{exportOrderId}/{productId}")
-    public APIResponse<DetailExportOrderResponse> updateDetailExportOrder(@PathVariable Long exportOrderId, @PathVariable Long productId, @RequestBody DetailExportOrder detailImportOrder){
-        return detailExportOrderService.updateDetailExportOrder(exportOrderId, productId, detailImportOrder);
+    public APIResponse<DetailExportOrderResponse> updateDetailExportOrder(@PathVariable Long exportOrderId, @PathVariable Long productId, @RequestBody DetailExportOrder detailExportOrder){
+        return detailExportOrderService.updateDetailExportOrder(exportOrderId, productId, detailExportOrder);
     }
 
     @PutMapping("/add/{id}")

@@ -33,7 +33,7 @@ public class DetailExportOrderService {
     public APIResponse<DetailExportOrderResponse> addDetailExportOrder(Long id, DetailExportOrderDTO detailExportOrderDTO) {
         ExportOrder exportOrder = exportOrderRepository.findById(id).orElse(null);
 
-        DetailExportOrder detailExportOrderExisted = detailExportOrderRepository.findDetailExportOrderByExportOrder_ExportIDAndProduct_ProductID(id, productRepository.findByName(detailExportOrderDTO.getProductName()).getProductID());
+        DetailExportOrder detailExportOrderExisted = detailExportOrderRepository.findDetailExportOrderByExportOrder_ExportIDAndProduct_ProductID(id, productRepository.findByName(detailExportOrderDTO.getName()).getProductID());
 
         if (exportOrder == null) {
             return new APIResponse<>(null, "Export order not found", false);
@@ -45,7 +45,7 @@ public class DetailExportOrderService {
 
         DetailExportOrder detailExportOrder = new DetailExportOrder();
 
-        Product product = productRepository.findByName(detailExportOrderDTO.getProductName());
+        Product product = productRepository.findByName(detailExportOrderDTO.getName());
 
         if (product == null) {
             return new APIResponse<>(null, "Product not found", false);
@@ -71,6 +71,7 @@ public class DetailExportOrderService {
         detailExportOrder.setId(detailExportOrderId);
         detailExportOrder.setExportOrder(exportOrder);
         detailExportOrder.setProduct(product);
+        detailExportOrder.setPrice(product.getPrice());
         detailExportOrder.setQuantity(detailExportOrderDTO.getQuantity());
         detailExportOrder.setDescription(detailExportOrderDTO.getDescription());
 
@@ -134,15 +135,9 @@ public class DetailExportOrderService {
             return new APIResponse<>(null, "Detail export order not found", false);
         }
 
-        ExportOrder exportOrder = detailExportOrder.getExportOrder();
-        exportOrder.setTotal(exportOrder.getTotal() + detailExportOrderExisted.getProduct().getPrice() * (detailExportOrderExisted.getQuantity() - detailExportOrder.getQuantity()));
+        ExportOrder exportOrder = detailExportOrderExisted.getExportOrder();
 
-        detailExportOrder.setQuantity(detailExportOrder.getQuantity());
-        detailExportOrder.setDescription(detailExportOrder.getDescription());
-
-        exportOrder.setTotal(exportOrder.getTotal() + detailExportOrder.getProduct().getPrice() * detailExportOrder.getQuantity());
-
-        exportOrderRepository.save(exportOrder);
+        exportOrder.setTotal(exportOrder.getTotal() + detailExportOrderExisted.getProduct().getPrice() * (detailExportOrder.getQuantity() - detailExportOrderExisted.getQuantity()));
 
         List<ProductMaterial> productMaterials = productMaterialRepository.findByProduct_ProductID(productId);
 
@@ -154,16 +149,21 @@ public class DetailExportOrderService {
             if (storageMaterial == null || storageMaterial.getQuantity() < productMaterial.getQuantity() * detailExportOrder.getQuantity()) {
                 return new APIResponse<>(null, "Not enough material in storage for product: " + detailExportOrder.getProduct().getName(), false);
             }
-            storageMaterial.setQuantity(storageMaterial.getQuantity() + productMaterial.getQuantity() * (detailExportOrderExisted.getQuantity() - detailExportOrder.getQuantity()));
+            storageMaterial.setQuantity(storageMaterial.getQuantity() - productMaterial.getQuantity() * (detailExportOrder.getQuantity() - detailExportOrderExisted.getQuantity()));
             storageRepository.save(storageMaterial);
         }
 
-        return new APIResponse<>(toDetailExportOrderResponse(detailExportOrder), "Update detail export order successfully", true);
+        detailExportOrderExisted.setQuantity(detailExportOrder.getQuantity());
+        detailExportOrderExisted.setDescription(detailExportOrder.getDescription());
+
+        exportOrderRepository.save(exportOrder);
+
+        return new APIResponse<>(toDetailExportOrderResponse(detailExportOrderExisted), "Update detail export order successfully", true);
     }
 
     public DetailExportOrderResponse toDetailExportOrderResponse(DetailExportOrder detailExportOrder) {
         DetailExportOrderResponse detailExportOrderResponse = new DetailExportOrderResponse();
-        detailExportOrderResponse.setProductID(detailExportOrder.getProduct().getProductID());
+        detailExportOrderResponse.setProductID(detailExportOrder.getId().getProductId());
         detailExportOrderResponse.setName(detailExportOrder.getProduct().getName());
         detailExportOrderResponse.setPrice(detailExportOrder.getProduct().getPrice());
         detailExportOrderResponse.setQuantity(detailExportOrder.getQuantity());

@@ -6,6 +6,7 @@ import com.example.coffee_shop_chain_management.dto.ProductDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.DetailExportOrderResponse;
 import com.example.coffee_shop_chain_management.response.EmployeeResponse;
 import com.example.coffee_shop_chain_management.response.ExportOrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,6 +224,15 @@ public class ExportOrderService {
         exportOrderResponse.setTotal(exportOrder.getTotal());
         exportOrderResponse.setEmployeeID(exportOrder.getEmployee().getEmployeeID());
         exportOrderResponse.setBranchID(exportOrder.getBranch().getBranchID());
+        exportOrderResponse.setDetailExportOrders(exportOrder.getDetailExportOrders().stream().map(detailExportOrder -> {
+            DetailExportOrderResponse detailExportOrderResponse = new DetailExportOrderResponse();
+            detailExportOrderResponse.setProductID(detailExportOrder.getProduct().getProductID());
+            detailExportOrderResponse.setName(detailExportOrder.getProduct().getName());
+            detailExportOrderResponse.setQuantity(detailExportOrder.getQuantity());
+            detailExportOrderResponse.setDescription(detailExportOrder.getDescription());
+            detailExportOrderResponse.setPrice(detailExportOrder.getPrice());
+            return detailExportOrderResponse;
+        }).toList());
 
         return exportOrderResponse;
     }
