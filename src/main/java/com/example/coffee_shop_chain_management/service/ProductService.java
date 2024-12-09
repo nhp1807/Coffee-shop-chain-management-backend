@@ -2,16 +2,15 @@ package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
-import com.example.coffee_shop_chain_management.entity.Material;
-import com.example.coffee_shop_chain_management.entity.Product;
-import com.example.coffee_shop_chain_management.entity.ProductMaterial;
-import com.example.coffee_shop_chain_management.entity.ProductMaterialId;
+import com.example.coffee_shop_chain_management.entity.*;
+import com.example.coffee_shop_chain_management.repository.DetailExportOrderRepository;
 import com.example.coffee_shop_chain_management.repository.MaterialRepository;
 import com.example.coffee_shop_chain_management.repository.ProductMaterialRepository;
 import com.example.coffee_shop_chain_management.repository.ProductRepository;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ProductMaterialResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
+import com.example.coffee_shop_chain_management.response.ProductStatResponse;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,9 @@ public class ProductService {
 
     @Autowired
     private MaterialRepository materialRepository;
+
+    @Autowired
+    private DetailExportOrderRepository detailExportOrderRepository;
 
     public APIResponse<List<ProductResponse>> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -188,6 +190,28 @@ public class ProductService {
 
         productRepository.deleteById(id);
         return new APIResponse<>(null, "Product deleted successfully", true);
+    }
+
+    public APIResponse<List<ProductStatResponse>> getProductStat() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductStatResponse> productStatResponses = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductStatResponse productStatResponse = new ProductStatResponse();
+            productStatResponse.setProductID(product.getProductID());
+
+            List<DetailExportOrder> productStat = detailExportOrderRepository.findByProduct_ProductID(product.getProductID());
+            long totalSales = productStat.stream().mapToLong(DetailExportOrder::getQuantity).sum();
+            double totalRevenue = productStat.stream().mapToDouble(detailExportOrder -> detailExportOrder.getQuantity() * detailExportOrder.getPrice()).sum();
+
+            productStatResponse.setTotalSales(totalSales);
+            productStatResponse.setTotalRevenue(totalRevenue);
+
+            productStatResponses.add(productStatResponse);
+        }
+
+        return new APIResponse<>(productStatResponses, "Product statistics retrieved successfully", true);
     }
 
     public ProductResponse toProductResponse(Product product) {

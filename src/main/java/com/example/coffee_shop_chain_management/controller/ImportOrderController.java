@@ -48,16 +48,6 @@ public class ImportOrderController {
         return importOrderService.createImportOrder(importOrderDTO);
     }
 
-    @PutMapping("/add/{id}")
-    public APIResponse<ImportOrderResponse> addDetailImportOrder(@RequestBody DetailImportOrderDTO importOrderDTO, @PathVariable Long id) {
-        return importOrderService.addDetailImportOrder(id, importOrderDTO);
-    }
-
-    @DeleteMapping("/delete/{orderID}/{materialID}")
-    public APIResponse<ImportOrderResponse> deleteDetailImportOrder(@PathVariable Long orderID, @PathVariable Long materialID) {
-        return importOrderService.deleteDetailImportOrder(orderID, materialID);
-    }
-
     @PostMapping("/confirm/{id}")
     public APIResponse<ImportOrderResponse> confirmImportOrder(@PathVariable Long id) {
         return importOrderService.confirmImportOrder(id);
