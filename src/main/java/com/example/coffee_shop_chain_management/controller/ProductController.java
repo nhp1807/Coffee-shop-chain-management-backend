@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
@@ -58,8 +59,8 @@ public class ProductController {
         return productService.deleteProductById(id);
     }
 
-    @GetMapping("/get/stat")
-    public APIResponse<List<ProductStatResponse>> getProductStat() {
-        return productService.getProductStat();
+    @PostMapping("/get/stat")
+    public APIResponse<List<ProductStatResponse>> getProductStat(@RequestBody DateRangeDTO dateRangeDTO) {
+        return productService.getProductStat(dateRangeDTO);
     }
 }
