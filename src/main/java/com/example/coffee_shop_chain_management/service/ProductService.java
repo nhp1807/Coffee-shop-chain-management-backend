@@ -60,6 +60,7 @@ public class ProductService {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setImage(productDTO.getImage());
+        product.setRecipe(productDTO.getRecipe());
 
         List<ProductMaterial> productMaterials = new ArrayList<>();
 
@@ -168,6 +169,10 @@ public class ProductService {
 
         if (productDTO.getImage() != null) {
             product.setImage(productDTO.getImage());
+        }
+
+        if (productDTO.getRecipe() != null) {
+            product.setRecipe(productDTO.getRecipe());
         }
 
         return new APIResponse<>(toProductResponse(productRepository.save(product)), "Product updated successfully", true);
