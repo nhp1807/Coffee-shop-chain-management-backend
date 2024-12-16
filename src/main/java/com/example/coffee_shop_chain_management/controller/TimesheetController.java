@@ -4,6 +4,7 @@ import com.example.coffee_shop_chain_management.dto.CreateTimesheetDTO;
 import com.example.coffee_shop_chain_management.dto.UpdateTimesheetDTO;
 import com.example.coffee_shop_chain_management.entity.Timesheet;
 import com.example.coffee_shop_chain_management.response.APIResponse;
+import com.example.coffee_shop_chain_management.response.SalaryResponse;
 import com.example.coffee_shop_chain_management.response.TimesheetResponse;
 import com.example.coffee_shop_chain_management.service.TimesheetService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,5 +57,10 @@ public class TimesheetController {
     @DeleteMapping("/delete/{id}")
     public APIResponse<TimesheetResponse> deleteTimesheet(@PathVariable Long id) {
         return timesheetService.deleteTimesheetById(id);
+    }
+
+    @GetMapping("/calculate/salary/{month}/{year}")
+    public APIResponse<List<SalaryResponse>> calculateSalary(@PathVariable int month, @PathVariable int year) {
+        return timesheetService.calculateSalaryByMonth(month, year);
     }
 }

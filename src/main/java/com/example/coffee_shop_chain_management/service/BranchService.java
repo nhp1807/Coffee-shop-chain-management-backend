@@ -172,6 +172,8 @@ public class BranchService {
         branchStatResponse.setBranchID(branch.getBranchID());
         branchStatResponse.setTotalEmployees(branch.getEmployees().size());
 
+        int totalExportOrders = 0;
+        int totalImportOrders = 0;
         long totalExportedOrdersMoney = 0;
         long totalImportedOrdersMoney = 0;
 
@@ -179,6 +181,7 @@ public class BranchService {
         for (ExportOrder exportOrder : exportOrders) {
             if (exportOrder.getDate().isAfter(startDate) && exportOrder.getDate().isBefore(endDate)) {
                 totalExportedOrdersMoney += exportOrder.getTotal();
+                totalExportOrders++;
             }
         }
 
@@ -186,12 +189,13 @@ public class BranchService {
         for (ImportOrder importOrder : importOrders) {
             if (importOrder.getDate().isAfter(startDate) && importOrder.getDate().isBefore(endDate)) {
                 totalImportedOrdersMoney += importOrder.getTotal();
+                totalImportOrders++;
             }
         }
 
-        branchStatResponse.setTotalExportedOrders(exportOrders.size());
+        branchStatResponse.setTotalExportedOrders(totalExportOrders);
         branchStatResponse.setTotalExportedOrdersMoney(totalExportedOrdersMoney);
-        branchStatResponse.setTotalImportedOrders(importOrders.size());
+        branchStatResponse.setTotalImportedOrders(totalImportOrders);
         branchStatResponse.setTotalImportedOrdersMoney(totalImportedOrdersMoney);
 
         return branchStatResponse;

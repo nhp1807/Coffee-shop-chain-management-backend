@@ -1,7 +1,9 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateProductDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.DetailExportOrderRepository;
 import com.example.coffee_shop_chain_management.repository.MaterialRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -142,7 +145,7 @@ public class ProductService {
     }
 
     @Transactional
-    public APIResponse<ProductResponse> updateProduct(Long id, CreateProductDTO productDTO) {
+    public APIResponse<ProductResponse> updateProduct(Long id, UpdateProductDTO productDTO) {
         Optional<Product> productExisted = productRepository.findById(id);
 
         if (productExisted.isEmpty()) {
@@ -166,7 +169,6 @@ public class ProductService {
         if (productDTO.getImage() != null) {
             product.setImage(productDTO.getImage());
         }
-        // Update product materials
 
         return new APIResponse<>(toProductResponse(productRepository.save(product)), "Product updated successfully", true);
     }
@@ -192,25 +194,40 @@ public class ProductService {
         return new APIResponse<>(null, "Product deleted successfully", true);
     }
 
-    public APIResponse<List<ProductStatResponse>> getProductStat() {
-        List<Product> products = productRepository.findAll();
+    public APIResponse<List<ProductStatResponse>> getProductStat(DateRangeDTO dateRangeDTO) {
+        // Chuyển đổi LocalDate thành LocalDateTime
+        LocalDateTime startDateTime = dateRangeDTO.getStartDate() != null ? dateRangeDTO.getStartDate().atStartOfDay() : LocalDateTime.MIN;
+        LocalDateTime endDateTime = dateRangeDTO.getEndDate() != null ? dateRangeDTO.getEndDate().atTime(23, 59, 59) : LocalDateTime.MAX;
 
+        // Lấy tất cả sản phẩm
+        List<Product> products = productRepository.findAll();
         List<ProductStatResponse> productStatResponses = new ArrayList<>();
 
+        // Lặp qua từng sản phẩm để tính thống kê
         for (Product product : products) {
             ProductStatResponse productStatResponse = new ProductStatResponse();
             productStatResponse.setProductID(product.getProductID());
+            productStatResponse.setProductName(product.getName());
 
-            List<DetailExportOrder> productStat = detailExportOrderRepository.findByProduct_ProductID(product.getProductID());
+            // Lấy chi tiết xuất hàng cho sản phẩm trong khoảng thời gian dựa trên ExportOrder.date
+            List<DetailExportOrder> productStat = detailExportOrderRepository.findByProduct_ProductIDAndExportOrder_DateBetween(
+                    product.getProductID(), startDateTime, endDateTime
+            );
+
+            // Tính tổng số lượng bán và doanh thu
             long totalSales = productStat.stream().mapToLong(DetailExportOrder::getQuantity).sum();
-            double totalRevenue = productStat.stream().mapToDouble(detailExportOrder -> detailExportOrder.getQuantity() * detailExportOrder.getPrice()).sum();
+            double totalRevenue = productStat.stream()
+                    .mapToDouble(detailExportOrder -> detailExportOrder.getQuantity() * detailExportOrder.getPrice())
+                    .sum();
 
+            // Thiết lập thông tin thống kê cho sản phẩm
             productStatResponse.setTotalSales(totalSales);
             productStatResponse.setTotalRevenue(totalRevenue);
 
             productStatResponses.add(productStatResponse);
         }
 
+        // Trả về kết quả
         return new APIResponse<>(productStatResponses, "Product statistics retrieved successfully", true);
     }
 
@@ -221,6 +238,7 @@ public class ProductService {
         productResponse.setDescription(product.getDescription());
         productResponse.setPrice(product.getPrice());
         productResponse.setImage(product.getImage());
+        productResponse.setRecipe(product.getRecipe());
         productResponse.setProductMaterials(product.getProductMaterials().stream().map(productMaterial -> {
             ProductMaterialResponse productMaterialResponse = new ProductMaterialResponse();
             productMaterialResponse.setMaterialID(productMaterial.getMaterial().getMaterialID());

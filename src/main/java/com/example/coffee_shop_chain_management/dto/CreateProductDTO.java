@@ -15,5 +15,6 @@ public class CreateProductDTO {
     String description;
     Double price;
     String image;
+    String recipe;
     List<ProductMaterialDTO> productMaterials;
 }

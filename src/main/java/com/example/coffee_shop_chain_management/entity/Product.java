@@ -31,6 +31,9 @@ public class Product {
     @Column(name = "image")
     String image;
 
+    @Column(name = "recipe")
+    String recipe;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetailExportOrder> detailExportOrders;
 
