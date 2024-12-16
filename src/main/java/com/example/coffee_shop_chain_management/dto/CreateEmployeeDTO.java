@@ -17,4 +17,5 @@ public class CreateEmployeeDTO {
     String email;
     String address;
     Long branchID;
+    Double shiftSalary;
 }

@@ -6,11 +6,10 @@ import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.mail.internet.MimeMultipart;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -32,10 +31,6 @@ public class SendOTP {
     private String EMAIL_VERIFICATION_URL;
     @Value("${email.verification.api_key}")
     private String EMAIL_VERIFICATION_API_KEY;
-
-
-    public static void main(String[] args) {
-    }
 
     public int generateOTP() {
         return (int) (Math.random() * 9000) + 1000;
@@ -149,5 +144,57 @@ public class SendOTP {
         }
 
         return true;
+    }
+
+    public void sendEmailWithAttachment(String toEmail, String subject, String body, File file) {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", SMTP_HOST);
+        properties.put("mail.smtp.port", SMTP_PORT);
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+
+        // Xác thực email
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
+            }
+        });
+
+        try {
+            // Tạo email
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(EMAIL_FROM));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject(subject);
+
+            // Nội dung email
+            MimeBodyPart bodyPart = new MimeBodyPart();
+            bodyPart.setText(body);
+
+            // File đính kèm
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            attachmentPart.attachFile(file);
+
+            // Gộp nội dung và file đính kèm
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(bodyPart);
+            multipart.addBodyPart(attachmentPart);
+
+            message.setContent(multipart);
+
+            // Gửi email
+            Transport.send(message);
+
+            System.out.println("Email sent successfully with attachment.");
+        } catch (Exception e) {
+            System.err.println("Error while sending email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        SendOTP sendOTP = new SendOTP();
+        sendOTP.sendEmailWithAttachment("nhp1807@gmail.com", "Test email with attachment", "This is a test email with attachment", new File("src/main/resources/application.properties"));
     }
 }

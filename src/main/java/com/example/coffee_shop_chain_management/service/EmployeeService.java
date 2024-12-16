@@ -33,7 +33,7 @@ public class EmployeeService {
     public APIResponse<EmployeeResponse> getEmployeeById(Long id) {
         Optional<Employee> employeeExisted = employeeRepository.findById(id);
 
-        if(!employeeExisted.isPresent()){
+        if (!employeeExisted.isPresent()) {
             return new APIResponse<>(null, "Employee not found", false);
         }
 
@@ -44,7 +44,7 @@ public class EmployeeService {
     public APIResponse<EmployeeResponse> updateEmployeeChatId(Long employeeId, String chatId) {
         Optional<Employee> employeeExisted = employeeRepository.findById(employeeId);
 
-        if(!employeeExisted.isPresent()){
+        if (!employeeExisted.isPresent()) {
             return new APIResponse<>(null, "Employee not found", false);
         }
 
@@ -60,7 +60,7 @@ public class EmployeeService {
     public APIResponse<EmployeeResponse> getEmployeeByEmail(String email) {
         Optional<Employee> employeeExisted = employeeRepository.findByEmail(email);
 
-        if(!employeeExisted.isPresent()){
+        if (!employeeExisted.isPresent()) {
             return new APIResponse<>(null, "Employee not found", false);
         }
 
@@ -81,6 +81,7 @@ public class EmployeeService {
         employee.setPhone(employeeDTO.getPhone());
         employee.setEmail(employeeDTO.getEmail());
         employee.setAddress(employeeDTO.getAddress());
+        employee.setShiftSalary(employeeDTO.getShiftSalary());
 
         Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
         employee.setBranch(branch);
@@ -117,6 +118,9 @@ public class EmployeeService {
             Branch branch = branchRepository.findById(employeeDTO.getBranchID()).orElseThrow(() -> new RuntimeException("Branch not found"));
             employee.setBranch(branch);
         }
+        if (employeeDTO.getShiftSalary() != null) {
+            employee.setShiftSalary(employeeDTO.getShiftSalary());
+        }
 
         employeeRepository.save(employee);
         return new APIResponse<>(toEmployeeResponse(employee), "Employee updated successfully", true);
@@ -143,14 +147,15 @@ public class EmployeeService {
     }
 
     public EmployeeResponse toEmployeeResponse(Employee employee) {
-       EmployeeResponse employeeResponse = new EmployeeResponse();
-       employeeResponse.setEmployeeID(employee.getEmployeeID());
-       employeeResponse.setName(employee.getName());
-       employeeResponse.setDob(employee.getDob());
-       employeeResponse.setPhone(employee.getPhone());
-       employeeResponse.setEmail(employee.getEmail());
-       employeeResponse.setAddress(employee.getAddress());
-       employeeResponse.setBranchID(employee.getBranch().getBranchID());
-       return employeeResponse;
+        EmployeeResponse employeeResponse = new EmployeeResponse();
+        employeeResponse.setEmployeeID(employee.getEmployeeID());
+        employeeResponse.setName(employee.getName());
+        employeeResponse.setDob(employee.getDob());
+        employeeResponse.setPhone(employee.getPhone());
+        employeeResponse.setEmail(employee.getEmail());
+        employeeResponse.setAddress(employee.getAddress());
+        employeeResponse.setBranchID(employee.getBranch().getBranchID());
+        employeeResponse.setShiftSalary(employee.getShiftSalary());
+        return employeeResponse;
     }
 }
