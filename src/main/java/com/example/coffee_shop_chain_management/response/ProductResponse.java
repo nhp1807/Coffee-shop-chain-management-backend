@@ -16,5 +16,6 @@ public class ProductResponse {
     String description;
     double price;
     String image;
+    String recipe;
     List<ProductMaterialResponse> productMaterials;
 }

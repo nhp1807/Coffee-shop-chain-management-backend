@@ -3,6 +3,7 @@ package com.example.coffee_shop_chain_management.service;
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
 import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateProductDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.DetailExportOrderRepository;
 import com.example.coffee_shop_chain_management.repository.MaterialRepository;
@@ -144,7 +145,7 @@ public class ProductService {
     }
 
     @Transactional
-    public APIResponse<ProductResponse> updateProduct(Long id, CreateProductDTO productDTO) {
+    public APIResponse<ProductResponse> updateProduct(Long id, UpdateProductDTO productDTO) {
         Optional<Product> productExisted = productRepository.findById(id);
 
         if (productExisted.isEmpty()) {
@@ -168,7 +169,6 @@ public class ProductService {
         if (productDTO.getImage() != null) {
             product.setImage(productDTO.getImage());
         }
-        // Update product materials
 
         return new APIResponse<>(toProductResponse(productRepository.save(product)), "Product updated successfully", true);
     }
@@ -238,6 +238,7 @@ public class ProductService {
         productResponse.setDescription(product.getDescription());
         productResponse.setPrice(product.getPrice());
         productResponse.setImage(product.getImage());
+        productResponse.setRecipe(product.getRecipe());
         productResponse.setProductMaterials(product.getProductMaterials().stream().map(productMaterial -> {
             ProductMaterialResponse productMaterialResponse = new ProductMaterialResponse();
             productMaterialResponse.setMaterialID(productMaterial.getMaterial().getMaterialID());

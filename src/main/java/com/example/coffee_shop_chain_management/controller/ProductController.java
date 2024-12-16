@@ -3,6 +3,7 @@ package com.example.coffee_shop_chain_management.controller;
 import com.example.coffee_shop_chain_management.dto.CreateProductDTO;
 import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.ProductMaterialDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateProductDTO;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.ProductResponse;
 import com.example.coffee_shop_chain_management.response.ProductStatResponse;
@@ -50,7 +51,7 @@ public class ProductController {
     }
 
     @PutMapping("/update/{id}")
-    public APIResponse<ProductResponse> updateProduct(@RequestBody CreateProductDTO productDTO, @PathVariable Long id) {
+    public APIResponse<ProductResponse> updateProduct(@RequestBody UpdateProductDTO productDTO, @PathVariable Long id) {
         return productService.updateProduct(id, productDTO);
     }
 
