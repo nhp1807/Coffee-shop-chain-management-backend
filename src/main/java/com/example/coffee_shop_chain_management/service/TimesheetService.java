@@ -176,7 +176,7 @@ public class TimesheetService {
                 File excelFile = ExcelExporter.exportTimesheetsToExcel(timesheets, filePath);
 
                 // Send email
-                sendOTP.sendEmailWithAttachment(salaryResponse.getEmail(), "Timesheet for " + month + "/" + year, message.toString(), excelFile);
+                sendOTP.sendEmailWithAttachment(salaryResponse.getEmail(), "Timesheet for " + month + "/" + year, "Here is your timesheets for this month", excelFile);
 
                 // Send telegram message
                 notificationBot.sendMessage(message.toString(), employee.getChatID());
