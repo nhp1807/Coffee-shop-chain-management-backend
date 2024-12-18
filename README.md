@@ -4,7 +4,41 @@
 
 The coffee shop chain management system helps to conveniently manage coffee shops, providing basic functions to meet practical operations. The system helps administrators control stores, managers of each store, employees and information about coffee and raw materials.
 
-## 📌 Installation
+## 📌 Installation instructions on local machine
+
+### 1. Backend
+
+- Clone the repository
+
+```bash
+git clone https://github.com/nhp1807/Coffee-shop-chain-management-backend.git
+```
+
+- Open the project in your IDE and run the project
+- The backend will run on port 8080
+- You can access the API documentation at `http://localhost:8080/swagger-ui.html`
+- The database configuration is in the `application.properties` file
+
+### 2. Frontend
+
+- Clone the repository
+
+```bash
+git clone https://github.com/nhp1807/Coffee-shop-chain-management-frontend.git
+```
+
+- Open the project in your IDE and run the project using the command
+
+```bash
+npm start
+```
+
+- The frontend will run on port 3000
+- You can access the website at `http://localhost:3000`
+
+## 📌 Running the project
+
+- The project is deployed on Render and GitHub pages, you can access the website at `https://nhp1807.github.io/Coffee-shop-chain-management-frontend/`
 
 ## 📣 Features
 
@@ -23,11 +57,11 @@ The coffee shop chain management system helps to conveniently manage coffee shop
 - Maven: version 3.8.2
 - Telegram bot: Telegram Bot API
 - Email: JavaMail API
-- Thymeleaf: version 3.0.12
+- ReactJS: version 17.0.2
 - Bootstrap: version 5.1.0
 
 ## 🧑‍🎓 Members
-Here is the list of members working on this project
+
 
 | No. | Name                   | ID       | Email                           |
 |-----|------------------------|----------|---------------------------------|
