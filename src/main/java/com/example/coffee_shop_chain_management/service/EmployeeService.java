@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateEmployeeDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateEmployeeDTO;
 import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.Branch;
 import com.example.coffee_shop_chain_management.entity.Employee;
@@ -92,7 +93,7 @@ public class EmployeeService {
     }
 
     @Transactional
-    public APIResponse<EmployeeResponse> updateEmployee(Long id, CreateEmployeeDTO employeeDTO) {
+    public APIResponse<EmployeeResponse> updateEmployee(Long id, UpdateEmployeeDTO employeeDTO) {
         Optional<Employee> employeeExited = employeeRepository.findById(id);
         if (!employeeExited.isPresent()) {
             return new APIResponse<>(null, "Employee not found", false);

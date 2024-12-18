@@ -95,12 +95,13 @@ public class DetailImportOrderService {
         detailImportOrder.setDescription(detailImportOrderDTO.getDescription());
 
         total += detailImportOrderDTO.getQuantity() * detailImportOrderDTO.getPrice();
-
         importOrder.setTotal(total);
-
         importOrder.getDetailImportOrders().add(detailImportOrder);
-
         importOrderRepository.save(importOrder);
+
+        Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(material.getMaterialID(), importOrder.getBranch().getBranchID());
+        storage.setQuantity(storage.getQuantity() + detailImportOrderDTO.getQuantity());
+        storageRepository.save(storage);
 
         return new APIResponse<>(null, "Detail import order added successfully", true);
     }
@@ -152,7 +153,17 @@ public class DetailImportOrderService {
         }
 
         ImportOrder importOrder = detailImportOrderExisted.getImportOrder();
-        importOrder.setTotal(importOrder.getTotal() + detailImportOrderExisted.getPrice() * (detailImportOrder.getQuantity() - detailImportOrderExisted.getQuantity()));
+//        importOrder.setTotal(importOrder.getTotal() + detailImportOrder.getPrice() * (detailImportOrder.getQuantity() - detailImportOrderExisted.getQuantity()));
+        double total = 0;
+        for (DetailImportOrder d : importOrder.getDetailImportOrders()) {
+            if (d.getId().getMaterialId().equals(materialId)) {
+                total += detailImportOrder.getPrice() * detailImportOrder.getQuantity();
+            } else {
+                total += d.getPrice() * d.getQuantity();
+            }
+        }
+        importOrder.setTotal(total);
+
         importOrderRepository.save(importOrder);
 
         Storage storage = storageRepository.findByMaterial_MaterialIDAndBranch_BranchID(materialId, importOrder.getBranch().getBranchID());

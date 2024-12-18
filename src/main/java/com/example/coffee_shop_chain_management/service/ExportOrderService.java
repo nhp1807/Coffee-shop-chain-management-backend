@@ -1,15 +1,19 @@
 package com.example.coffee_shop_chain_management.service;
 
 import com.example.coffee_shop_chain_management.dto.CreateExportOrderDTO;
+import com.example.coffee_shop_chain_management.emails.SendOTP;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.DetailExportOrderResponse;
+import com.example.coffee_shop_chain_management.response.ExportOrderDataResponse;
 import com.example.coffee_shop_chain_management.response.ExportOrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,10 @@ public class ExportOrderService {
     private ProductMaterialRepository productMaterialRepository;
     @Autowired
     private DetailExportOrderRepository detailExportOrderRepository;
+    @Autowired
+    private SendOTP sendOTP;
+    @Autowired
+    private AccountRepository accountRepository;
 
     // GET
     public APIResponse<List<ExportOrderResponse>> getAllExportOrders() {
@@ -211,6 +219,50 @@ public class ExportOrderService {
         storageRepository.save(storage);
 
         return new APIResponse<>(toExportOrderResponse(exportOrder), "Detail export order deleted successfully", true);
+    }
+
+    public APIResponse<ExportOrderResponse> exportData(int month, int year, Long branchID) {
+        List<ExportOrder> exportOrders;
+
+        if (branchID != null){
+            exportOrders = exportOrderRepository.findExportOrderByMonthAndYearAndBranchID(month, year, branchID);
+        }
+
+        exportOrders = exportOrderRepository.findExportOrderByMonthAndYear(month, year);
+
+        List<ExportOrderDataResponse> exportOrderDataResponses = new ArrayList<>();
+        for (ExportOrder exportOrder : exportOrders) {
+            for (DetailExportOrder detailExportOrder : exportOrder.getDetailExportOrders()) {
+                ExportOrderDataResponse exportOrderDataResponse = new ExportOrderDataResponse();
+                exportOrderDataResponse.setProductID(detailExportOrder.getId().getProductId());
+                exportOrderDataResponse.setProductName(detailExportOrder.getProduct().getName());
+                exportOrderDataResponse.setQuantity(detailExportOrder.getQuantity());
+                exportOrderDataResponse.setPrice(detailExportOrder.getPrice());
+                exportOrderDataResponse.setTotal(detailExportOrder.getPrice() * detailExportOrder.getQuantity());
+                exportOrderDataResponse.setDate(detailExportOrder.getExportOrder().getDate());
+                exportOrderDataResponses.add(exportOrderDataResponse);
+            }
+        }
+
+        try {
+            File file = ExcelExporter.exportDataToExcel(exportOrderDataResponses, "export_order_data.xlsx");
+
+            Account account = null;
+
+            if (branchID != null){
+                account = accountRepository.findByBranch_BranchID(branchID).orElse(null);
+            } else {
+                account = accountRepository.findByRole("ADMIN").orElse(null);
+            }
+
+            sendOTP.sendEmailWithAttachment(account.getEmail(), "Export Order Data for", "Export Order Data", file);
+
+            file.delete();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new APIResponse<>(null, "Get detail export order successfully", true);
     }
 
     public ExportOrderResponse toExportOrderResponse(ExportOrder exportOrder) {

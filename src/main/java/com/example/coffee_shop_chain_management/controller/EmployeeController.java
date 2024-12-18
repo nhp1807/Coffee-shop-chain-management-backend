@@ -1,6 +1,7 @@
 package com.example.coffee_shop_chain_management.controller;
 
 import com.example.coffee_shop_chain_management.dto.CreateEmployeeDTO;
+import com.example.coffee_shop_chain_management.dto.UpdateEmployeeDTO;
 import com.example.coffee_shop_chain_management.entity.Employee;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.EmployeeResponse;
@@ -43,7 +44,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/update/{id}")
-    public APIResponse<EmployeeResponse> updateEmployee(@RequestBody CreateEmployeeDTO employeeDTO, @PathVariable Long id) {
+    public APIResponse<EmployeeResponse> updateEmployee(@RequestBody UpdateEmployeeDTO employeeDTO, @PathVariable Long id) {
         return employeeService.updateEmployee(id, employeeDTO);
     }
 
