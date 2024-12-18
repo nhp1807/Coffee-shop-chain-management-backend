@@ -1,15 +1,19 @@
 package com.example.coffee_shop_chain_management.service;
 
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.DetailExportOrderDTO;
 import com.example.coffee_shop_chain_management.entity.*;
 import com.example.coffee_shop_chain_management.repository.*;
 import com.example.coffee_shop_chain_management.response.APIResponse;
 import com.example.coffee_shop_chain_management.response.DetailExportOrderResponse;
+import com.example.coffee_shop_chain_management.response.ExportOrderDataResponse;
 import com.example.coffee_shop_chain_management.response.ExportOrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -159,6 +163,30 @@ public class DetailExportOrderService {
         exportOrderRepository.save(exportOrder);
 
         return new APIResponse<>(toDetailExportOrderResponse(detailExportOrderExisted), "Update detail export order successfully", true);
+    }
+
+    public APIResponse<DetailExportOrderResponse> exportData(int month, int year) {
+        List<DetailExportOrder> detailExportOrders = detailExportOrderRepository.findDetailExportOrderByMonthAndYear(month, year);
+
+        List<ExportOrderDataResponse> exportOrderDataResponses = new ArrayList<>();
+        for (DetailExportOrder detailExportOrder : detailExportOrders) {
+            ExportOrderDataResponse exportOrderDataResponse = new ExportOrderDataResponse();
+            exportOrderDataResponse.setProductID(detailExportOrder.getId().getProductId());
+            exportOrderDataResponse.setProductName(detailExportOrder.getProduct().getName());
+            exportOrderDataResponse.setQuantity(detailExportOrder.getQuantity());
+            exportOrderDataResponse.setPrice(detailExportOrder.getPrice());
+            exportOrderDataResponse.setTotal(detailExportOrder.getPrice() * detailExportOrder.getQuantity());
+            exportOrderDataResponse.setDate(detailExportOrder.getExportOrder().getDate());
+            exportOrderDataResponses.add(exportOrderDataResponse);
+        }
+
+        try {
+            ExcelExporter.exportDataToExcel(exportOrderDataResponses, "export_order_data.xlsx");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new APIResponse<>(null, "Get detail export order successfully", true);
     }
 
     public DetailExportOrderResponse toDetailExportOrderResponse(DetailExportOrder detailExportOrder) {

@@ -1,5 +1,6 @@
 package com.example.coffee_shop_chain_management.controller;
 
+import com.example.coffee_shop_chain_management.dto.DateRangeDTO;
 import com.example.coffee_shop_chain_management.dto.DetailExportOrderDTO;
 import com.example.coffee_shop_chain_management.entity.DetailExportOrder;
 import com.example.coffee_shop_chain_management.response.APIResponse;
@@ -34,5 +35,10 @@ public class DetailExportOrderController {
     @DeleteMapping("/delete/{orderID}/{materialID}")
     public APIResponse<DetailExportOrderResponse> deleteDetailExportOrder(@PathVariable Long orderID, @PathVariable Long materialID) {
         return detailExportOrderService.deleteDetailExportOrder(orderID, materialID);
+    }
+
+    @PostMapping("/export/{month}/{year}")
+    public APIResponse<DetailExportOrderResponse> exportData(@PathVariable int month, @PathVariable int year){
+        return detailExportOrderService.exportData(month, year);
     }
 }
