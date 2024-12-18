@@ -8,10 +8,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DashboardResponse {
-    int totalBranches;
+public class ManagerDashboardResponse {
     int totalEmployees;
-    int totalProducts;
     int totalExportOrders;
     int totalImportOrders;
     double totalRevenue;
