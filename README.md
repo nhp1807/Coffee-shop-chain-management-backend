@@ -18,6 +18,9 @@ git clone https://github.com/nhp1807/Coffee-shop-chain-management-backend.git
 - The backend will run on port 8080
 - You can access the API documentation at `http://localhost:8080/swagger-ui.html`
 - The database configuration is in the `application.properties` file
+- Create .env file in the root directory of the project and add the example content from the `.env.example` file
+
+```bash
 
 ### 2. Frontend
 
